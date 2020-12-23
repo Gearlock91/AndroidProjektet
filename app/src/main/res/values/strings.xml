@@ -7,4 +7,5 @@
     <string name="crypto">Cryptonite</string>
     <string name="add_friend">Add Friends</string>
     <string name="welcome_text">Welcome! You do not seem to have any friends. Click the "+" button on the top right corner to add some.</string>
+    <string name="write_Message">Write a messag</string>
 </resources>

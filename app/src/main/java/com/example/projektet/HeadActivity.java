@@ -31,16 +31,13 @@ public class HeadActivity extends AppCompatActivity {
 
         addFriendButton = findViewById(R.id.confirmAddFriend);
 
-        addFriendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
-
-                //System.out.println("Successfully fetched user data: " + userRecord.getUid());
-
-
-            }
-        });
+//     addFriendButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+//                System.out.println("Successfully fetched user data: " + userRecord.getUid());
+//           }
+//        });
 
         FriendsFragment friendsFragment = new FriendsFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

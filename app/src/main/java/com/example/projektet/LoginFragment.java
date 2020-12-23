@@ -51,8 +51,10 @@ public class LoginFragment extends Fragment {
     }
 
     private void updateUI(FirebaseUser currentUser) {
-        Intent intent = new Intent(activity, HeadActivity.class);
-        startActivity(intent);
+        if(currentUser != null){
+          Intent intent = new Intent(activity, HeadActivity.class);
+          startActivity(intent);
+        }
     }
 
     @Override
@@ -70,7 +72,13 @@ public class LoginFragment extends Fragment {
                 String providedNick = email.getText().toString().trim();
                 String providedPass = password.getText().toString().trim();
 
-                signIn(providedNick, providedPass);
+                if(!providedNick.isEmpty() && !providedPass.isEmpty()){
+                    signIn(providedNick, providedPass);
+                }else{
+                    Toast.makeText(activity, "Check email or password.", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         });
 
@@ -102,7 +110,7 @@ public class LoginFragment extends Fragment {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(activity, "Authentication failed.",
+                            Toast.makeText(activity, "Authentication failed: Check email or password.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }

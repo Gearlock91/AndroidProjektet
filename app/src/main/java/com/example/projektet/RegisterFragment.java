@@ -23,7 +23,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 import static android.content.ContentValues.TAG;
@@ -34,8 +41,10 @@ public class RegisterFragment extends Fragment {
 
     Button registerButton;
     EditText email;
+    EditText nickName;
     EditText password;
     Activity activity;
+    DatabaseReference myRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +80,26 @@ public class RegisterFragment extends Fragment {
     }
 
     private void updateUI(FirebaseUser currentUser) {
+
+//
+//        myRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                GenericTypeIndicator<ArrayList<MemberData>> type = new GenericTypeIndicator<ArrayList<MemberData>>() {};
+//                ArrayList<MemberData> value = snapshot.getValue(type);
+//                if(value != null){
+//
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+
     }
 
     @Override
@@ -83,6 +112,8 @@ public class RegisterFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("member");
 
         registerButton = (Button) layout.findViewById(R.id.registerUserButton);
 
@@ -93,6 +124,10 @@ public class RegisterFragment extends Fragment {
                 password = (EditText) layout.findViewById(R.id.registerPassword);
                 String providedEmail = email.getText().toString().trim();
                 String providedPassword = password.getText().toString().trim();
+                nickName = (EditText) layout.findViewById(R.id.registerNickname);
+                String providedNickName = nickName.getText().toString().trim();
+                MemberData member = new MemberData(providedNickName);
+                myRef.setValue("FAAAAAAAAAAAAAAAAAAAAAAAAN");
                 createAccount(providedEmail, providedPassword);
             }
         });
