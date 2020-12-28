@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-public class HeadActivity extends AppCompatActivity implements AddFriendFragment.Listener {
+public class HeadActivity extends AppCompatActivity implements AddFriendFragment.Listener, FriendsFragment.Listener {
 
     FriendsFragment friendsFragment;
     @Override
@@ -42,7 +42,7 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem addFriend = menu.findItem(R.id.action_addFriend);
-        MenuItem startChat = menu.findItem(R.id.action_sendMessage);
+        //MenuItem startChat = menu.findItem(R.id.action_sendMessage);
 
         addFriend.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -57,18 +57,18 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
             }
         });
 
-        startChat.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                ChatFragment chatFragment = new ChatFragment();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.fragmentArea, chatFragment);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
-                return false;
-            }
-        });
+//        startChat.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                ChatFragment chatFragment = new ChatFragment();
+//                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//                ft.replace(R.id.fragmentArea, chatFragment);
+//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                ft.addToBackStack(null);
+//                ft.commit();
+//                return false;
+//            }
+//        });
 
 
 
@@ -80,6 +80,16 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
     public void changeFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragmentArea, friendsFragment);
+        ft.addToBackStack(null);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commit();
+    }
+
+    @Override
+    public void switchToChat() {
+        ChatFragment chatFragment = new ChatFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentArea, chatFragment);
         ft.addToBackStack(null);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();

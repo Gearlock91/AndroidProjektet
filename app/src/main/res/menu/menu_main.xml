@@ -8,11 +8,11 @@
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
         />
-    <item
-        android:id="@+id/action_sendMessage"
-        android:title="@string/start_chat"
-        android:icon="@drawable/baseline_chat_white_24"
-        android:orderInCategory="1"
-        app:showAsAction="ifRoom"
-        />
+<!--    <item-->
+<!--        android:id="@+id/action_sendMessage"-->
+<!--        android:title="@string/start_chat"-->
+<!--        android:icon="@drawable/baseline_chat_white_24"-->
+<!--        android:orderInCategory="1"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        />-->
 </menu>

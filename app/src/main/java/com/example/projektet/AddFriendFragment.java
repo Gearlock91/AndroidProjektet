@@ -32,6 +32,7 @@ public class AddFriendFragment extends Fragment {
     EditText nickName;
     DatabaseReference myRef;
     Listener listener;
+    static int id = 0;
 
     public interface Listener {
         void changeFragment();
@@ -64,14 +65,11 @@ public class AddFriendFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int id = 0;
                 String wantedFriend = nickName.getText().toString().trim();
                 for(MemberData member : allMembers){
-
                     if(member.getNickName().equals(wantedFriend)){
-                        id++;
                         myRef = FirebaseDatabase.getInstance().getReference("users/"+ currentUser.getDisplayName() + "/Friends");
-                        myRef.child(String.valueOf(id)).setValue(member.getNickName());
+                        myRef.child(String.valueOf(id++)).setValue(member.getNickName());
                     }
                 }
                 listener.changeFragment();

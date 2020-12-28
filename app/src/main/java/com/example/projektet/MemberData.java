@@ -1,6 +1,7 @@
 package com.example.projektet;
 
 class MemberData {
+
     private String nickName;
     private String email;
     private String password;
@@ -18,9 +19,8 @@ class MemberData {
         this.email = email;
         this.password = password;
 
+
     }
-
-
 
 
     public String getNickName() {
