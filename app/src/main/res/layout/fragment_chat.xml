@@ -8,6 +8,12 @@
     android:focusableInTouchMode="true"
     tools:context="com.example.projektet.MainActivity">
 
+    <EditText
+        android:id="@+id/to_friend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/to_my_friend"/>
+
     <ListView
         android:layout_width="match_parent"
         android:id="@+id/messages_view"

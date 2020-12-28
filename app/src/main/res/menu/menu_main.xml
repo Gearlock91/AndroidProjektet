@@ -4,9 +4,15 @@
 
     <item android:id="@+id/action_addFriend"
         android:title="@string/add_friend"
-        android:icon="@drawable/ic_add_white_24dp"
+        android:icon="@drawable/baseline_person_add_white_24"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/action_sendMessage"
+        android:title="@string/start_chat"
+        android:icon="@drawable/baseline_chat_white_24"
         android:orderInCategory="1"
         app:showAsAction="ifRoom"
         />
-
 </menu>

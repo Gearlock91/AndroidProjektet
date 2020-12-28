@@ -5,6 +5,13 @@ class MemberData {
     private String email;
     private String password;
 
+    public MemberData(String name){
+        this(name,null,null);
+    }
+
+    public MemberData(String name, String email) {
+        this(name,email,null);
+    }
 
     public MemberData(String name, String email, String password) {
         this.nickName = name;
@@ -13,9 +20,8 @@ class MemberData {
 
     }
 
-    // Add an empty constructor so we can later parse JSON into MemberData using Jackson
-    public MemberData() {
-    }
+
+
 
     public String getNickName() {
         return nickName;

@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -53,6 +54,9 @@ public class RegisterFragment extends Fragment {
 
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(member.getNickName()).build();
+                            user.updateProfile(profileUpdates);
                             Toast.makeText(activity, "Account Created!.",
                                     Toast.LENGTH_LONG).show();
                             updateUI(user);
@@ -102,7 +106,7 @@ public class RegisterFragment extends Fragment {
                 nickName = (EditText) layout.findViewById(R.id.registerNickname);
                 String providedNickName = nickName.getText().toString().trim();
                 MemberData member = new MemberData(providedNickName, providedEmail, providedPassword);
-                myRef.child(member.getNickName()).setValue(member.getEmail());
+                myRef.child(member.getNickName()).child("email").setValue(member.getEmail());
                 createAccount(member);
             }
         });

@@ -17,10 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-public class HeadActivity extends AppCompatActivity {
+public class HeadActivity extends AppCompatActivity implements AddFriendFragment.Listener {
 
-    Button addFriendButton;
-
+    FriendsFragment friendsFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,17 +28,8 @@ public class HeadActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        addFriendButton = findViewById(R.id.confirmAddFriend);
 
-//     addFriendButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
-//                System.out.println("Successfully fetched user data: " + userRecord.getUid());
-//           }
-//        });
-
-        FriendsFragment friendsFragment = new FriendsFragment();
+        friendsFragment = new FriendsFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.fragmentArea, friendsFragment);
         ft.addToBackStack(null);
@@ -51,9 +41,10 @@ public class HeadActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_addFriend);
+        MenuItem addFriend = menu.findItem(R.id.action_addFriend);
+        MenuItem startChat = menu.findItem(R.id.action_sendMessage);
 
-        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        addFriend.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 AddFriendFragment addFriendFragment = new AddFriendFragment();
@@ -66,9 +57,31 @@ public class HeadActivity extends AppCompatActivity {
             }
         });
 
+        startChat.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                ChatFragment chatFragment = new ChatFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.fragmentArea, chatFragment);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.addToBackStack(null);
+                ft.commit();
+                return false;
+            }
+        });
+
 
 
         return super.onCreateOptionsMenu(menu);
 
+    }
+
+    @Override
+    public void changeFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragmentArea, friendsFragment);
+        ft.addToBackStack(null);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commit();
     }
 }
