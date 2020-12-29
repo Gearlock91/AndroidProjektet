@@ -128,10 +128,7 @@ public class ChatFragment extends Fragment {
                 for(DataSnapshot child : snapshot.getChildren()){
                     sentMessages.add(child.toString());
                 }
-
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

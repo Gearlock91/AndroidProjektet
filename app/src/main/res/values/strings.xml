@@ -10,4 +10,6 @@
     <string name="write_Message">Write a message</string>
     <string name="start_chat">Send message</string>
     <string name="to_my_friend">To friend...</string>
+    <string name="channel_name">Notify</string>
+    <string name="channel_description">Notify the user</string>
 </resources>

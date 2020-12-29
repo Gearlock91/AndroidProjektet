@@ -1,9 +1,14 @@
 package com.example.projektet;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -33,6 +38,8 @@ public class FriendsFragment extends Fragment {
     ListView friendsList;
     FirebaseAuth mAuth;
     ArrayAdapter<String> arrayAdapter;
+    FirebaseDatabase database;
+    FirebaseUser currentUser;
     private Listener listener;
 
     public interface Listener {
@@ -60,9 +67,9 @@ public class FriendsFragment extends Fragment {
         friendsList = (ListView) layout.findViewById(R.id.friends_List);
         arrayAdapter = new ArrayAdapter<String>(this.getContext(),android.R.layout.simple_list_item_1);
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() +"/Friends");
 
 
@@ -95,8 +102,33 @@ public class FriendsFragment extends Fragment {
 
             }
         });
+
+
         friendsList.setAdapter(arrayAdapter);
         return layout;
+    }
+
+    private void notificationListener(){
+        DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
+        notification.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                        .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
+                        .setContentTitle("New message")
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+
+                // notificationId is a unique int for each notification that you must define
+                notificationManager.notify(1, builder.build());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
