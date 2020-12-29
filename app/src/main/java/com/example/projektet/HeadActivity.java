@@ -111,7 +111,7 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
 
     private void notificationListener(){
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
-        notification.addValueEventListener(new ValueEventListener() {
+        notification.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot child : snapshot.getChildren()){
