@@ -115,16 +115,12 @@ public class FriendsFragment extends Fragment {
         notification.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), NotificationChannel.DEFAULT_CHANNEL_ID)
                         .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
                         .setContentTitle("New message")
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
-                // notificationId is a unique int for each notification that you must define
-                notificationManager.notify(1, builder.build());
-
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
                 notificationManager.notify(001, builder.build());
             }
 
