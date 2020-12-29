@@ -41,6 +41,8 @@ public class FriendsFragment extends Fragment {
     FirebaseDatabase database;
     FirebaseUser currentUser;
     private Listener listener;
+    String CHANNEL_ID = "1";
+    View layout;
 
     public interface Listener {
         void switchToChat(String name);
@@ -62,7 +64,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_friends, container, false);
+        layout = inflater.inflate(R.layout.fragment_friends, container, false);
         fListDatabase = new ArrayList<MemberData>();
         friendsList = (ListView) layout.findViewById(R.id.friends_List);
         arrayAdapter = new ArrayAdapter<String>(this.getContext(),android.R.layout.simple_list_item_1);
@@ -72,6 +74,7 @@ public class FriendsFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() +"/Friends");
 
+        createNotificationChannel();
 
         friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -115,12 +118,14 @@ public class FriendsFragment extends Fragment {
         notification.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), NotificationChannel.DEFAULT_CHANNEL_ID)
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(layout.getContext(), CHANNEL_ID)
                         .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
-                        .setContentTitle("New message")
+                        .setContentTitle("You have a new message!")
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(layout.getContext());
+
+                // notificationId is a unique int for each notification that you must define
                 notificationManager.notify(001, builder.build());
             }
 
@@ -136,5 +141,21 @@ public class FriendsFragment extends Fragment {
         super.onPause();
         fListDatabase.clear();
         arrayAdapter.clear();
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
