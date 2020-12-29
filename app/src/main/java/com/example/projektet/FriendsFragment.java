@@ -134,7 +134,7 @@ public class FriendsFragment extends Fragment {
                             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(layout.getContext());
 
                             // notificationId is a unique int for each notification that you must define
-                            notificationManager.notify(Integer.valueOf(notice.getKey()), builder.build());
+                            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
                         }
 
                         @Override
