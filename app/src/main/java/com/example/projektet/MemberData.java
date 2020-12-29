@@ -18,10 +18,7 @@ class MemberData {
         this.nickName = name;
         this.email = email;
         this.password = password;
-
-
     }
-
 
     public String getNickName() {
         return nickName;

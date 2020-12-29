@@ -65,6 +65,7 @@ public class AddFriendFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String wantedFriend = nickName.getText().toString().trim();
                 for(MemberData member : allMembers){
                     if(member.getNickName().equals(wantedFriend)){
@@ -85,10 +86,9 @@ public class AddFriendFragment extends Fragment {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                members.clear();
                 for(DataSnapshot child : snapshot.getChildren()){
-                    child.getChildren().forEach(key -> {
-                        members.add(new MemberData(child.getKey()));
-                    });
+                    members.add(new MemberData(child.getKey()));
                 }
             }
 

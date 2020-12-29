@@ -6,12 +6,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,6 +26,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
+
 public class FriendsFragment extends Fragment {
     List<MemberData> fListDatabase;
     ListView friendsList;
@@ -32,7 +36,7 @@ public class FriendsFragment extends Fragment {
     private Listener listener;
 
     public interface Listener {
-        void switchToChat();
+        void switchToChat(String name);
     }
 
     @Override
@@ -65,7 +69,8 @@ public class FriendsFragment extends Fragment {
         friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                listener.switchToChat();
+                 String name = (String) friendsList.getItemAtPosition(position).toString().trim();
+                 listener.switchToChat(name);
             }
         });
 

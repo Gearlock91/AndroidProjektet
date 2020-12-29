@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,8 +87,11 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
     }
 
     @Override
-    public void switchToChat() {
+    public void switchToChat(String name) {
+        Bundle nameBundle = new Bundle();
+        nameBundle.putString("name", name);
         ChatFragment chatFragment = new ChatFragment();
+        chatFragment.setArguments(nameBundle);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragmentArea, chatFragment);
         ft.addToBackStack(null);

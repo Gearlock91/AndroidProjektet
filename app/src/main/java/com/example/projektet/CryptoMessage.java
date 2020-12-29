@@ -4,16 +4,16 @@ public class CryptoMessage {
 
     // Message.java
         private String text; // message body
-        private MemberData memberData; // data of the user that sent this message
+        private String memberNickname;
         private boolean belongsToCurrentUser; // is this message sent by us?
 
         public CryptoMessage(String text){
             this(text,null,false);
         }
 
-        public CryptoMessage(String text, MemberData memberData, boolean belongsToCurrentUser) {
+        public CryptoMessage(String text, String memberNickname, boolean belongsToCurrentUser) {
             this.text = text;
-            this.memberData = memberData;
+            this.memberNickname = memberNickname;
             this.belongsToCurrentUser = belongsToCurrentUser;
         }
 
@@ -21,8 +21,8 @@ public class CryptoMessage {
             return text;
         }
 
-        public MemberData getMemberData() {
-            return memberData;
+        public String getMemberNickname() {
+            return memberNickname;
         }
 
         public boolean isBelongsToCurrentUser() {
