@@ -43,7 +43,7 @@ public class FriendsFragment extends Fragment {
     FirebaseDatabase database;
     FirebaseUser currentUser;
     private Listener listener;
-    String CHANNEL_ID = "1";
+
     View layout;
 
     public interface Listener {
@@ -76,7 +76,6 @@ public class FriendsFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() +"/Friends");
 
-        createNotificationChannel();
 
         friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -109,62 +108,9 @@ public class FriendsFragment extends Fragment {
         });
 
 
-        notificationListener();
 
         friendsList.setAdapter(arrayAdapter);
         return layout;
-    }
-
-    private void notificationListener(){
-        DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
-        notification.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot child : snapshot.getChildren()){
-                    DatabaseReference notice = database.getReference("users/" + currentUser.getDisplayName() +"/Messages/" + child.getKey());
-                    notice.addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(layout.getContext(), CHANNEL_ID)
-                                    .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
-                                    .setContentTitle("You have a new message!")
-                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(layout.getContext());
-
-                            // notificationId is a unique int for each notification that you must define
-                            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
-                        }
-
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
     }
 
     @Override
@@ -174,19 +120,5 @@ public class FriendsFragment extends Fragment {
         arrayAdapter.clear();
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+
 }
