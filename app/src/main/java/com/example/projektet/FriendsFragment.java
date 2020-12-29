@@ -104,6 +104,8 @@ public class FriendsFragment extends Fragment {
         });
 
 
+        notificationListener();
+
         friendsList.setAdapter(arrayAdapter);
         return layout;
     }
