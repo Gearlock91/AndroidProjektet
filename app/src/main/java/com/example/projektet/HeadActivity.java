@@ -48,6 +48,7 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         createNotificationChannel();
