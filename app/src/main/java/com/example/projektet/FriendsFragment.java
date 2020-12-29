@@ -117,7 +117,7 @@ public class FriendsFragment extends Fragment {
 
     private void notificationListener(){
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
-        notification.addListenerForSingleValueEvent(new ValueEventListener() {
+        notification.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot child : snapshot.getChildren()){
