@@ -168,6 +168,11 @@ public class ChatFragment extends Fragment {
         myRef.removeEventListener(firstRun);
     }
 
-
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
+        myRef.removeValue();
+    }
 
 }
