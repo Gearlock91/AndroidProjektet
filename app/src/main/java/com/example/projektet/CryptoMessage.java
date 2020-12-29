@@ -7,9 +7,10 @@ public class CryptoMessage {
         private String memberNickname;
         private boolean belongsToCurrentUser; // is this message sent by us?
 
-        public CryptoMessage(String text){
-            this(text,null,false);
+        public CryptoMessage(String text, boolean belongsToCurrentUser){
+            this(text,null,belongsToCurrentUser);
         }
+
 
         public CryptoMessage(String text, String memberNickname, boolean belongsToCurrentUser) {
             this.text = text;
