@@ -117,11 +117,10 @@ public class FriendsFragment extends Fragment {
 
     private void notificationListener(){
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
-        notification.addValueEventListener(new ValueEventListener() {
+        notification.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 for(DataSnapshot child : snapshot.getChildren()){
-
                     DatabaseReference notice = database.getReference("users/" + currentUser.getDisplayName() +"/Messages/" + child.getKey());
                     notice.addChildEventListener(new ChildEventListener() {
                         @Override
@@ -161,10 +160,26 @@ public class FriendsFragment extends Fragment {
             }
 
             @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
     }
 
     @Override
