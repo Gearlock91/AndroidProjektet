@@ -111,7 +111,7 @@ public class FriendsFragment extends Fragment {
     }
 
     private void notificationListener(){
-        DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
+        DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages/Aifos");
         notification.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -120,10 +120,12 @@ public class FriendsFragment extends Fragment {
                         .setContentTitle("New message")
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+                NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
                 // notificationId is a unique int for each notification that you must define
                 notificationManager.notify(1, builder.build());
+
+                notificationManager.notify(001, builder.build());
             }
 
             @Override
