@@ -1,5 +1,6 @@
 package com.example.projektet;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,21 +47,7 @@ public class ChatFragment extends Fragment {
         Bundle test = getArguments();
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser);
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot != null){
-                    id = (int) snapshot.getChildrenCount();
-                    createButton();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        readSentMessage();
     }
 
     @Override
@@ -71,6 +58,16 @@ public class ChatFragment extends Fragment {
         sendButton = (ImageButton) layout.findViewById(R.id.send_button);
         message = (EditText) layout.findViewById(R.id.message_text);
 
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser +"/");
+                myRef.push().setValue(message.getText().toString());
+                //myRef.setValue(message.getText().toString());
+                receivedMessagesAdapter.add(new CryptoMessage(message.getText().toString(), true));
+                message.setText("");
+            }
+        });
 
         myAuth = FirebaseAuth.getInstance();
         currentUser = myAuth.getCurrentUser().getDisplayName();
@@ -89,18 +86,6 @@ public class ChatFragment extends Fragment {
         receivedMessagesAdapter.clear();
     }
 
-    private void createButton(){
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id++;
-                myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser +"/"+ id);
-                myRef.setValue(message.getText().toString());
-                receivedMessagesAdapter.add(new CryptoMessage(message.getText().toString(), true));
-                message.setText("");
-            }
-        });
-    }
 
     private void readOnce(){
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
@@ -132,9 +117,34 @@ public class ChatFragment extends Fragment {
         });
     }
 
+
+    private void readSentMessage(){
+        List<String> sentMessages = new ArrayList<String>();
+        myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser);
+
+        ValueEventListener sm = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot child : snapshot.getChildren()){
+                    sentMessages.add(child.toString());
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+
+        myRef.addValueEventListener(sm);
+        myRef.removeEventListener(sm);
+
+    }
+
     private void readMessageFromSender(){
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
-
         ValueEventListener firstRun = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
