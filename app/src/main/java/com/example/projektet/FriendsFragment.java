@@ -117,33 +117,47 @@ public class FriendsFragment extends Fragment {
 
     private void notificationListener(){
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
-        notification.addChildEventListener(new ChildEventListener() {
+        notification.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(layout.getContext(), CHANNEL_ID)
-                        .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
-                        .setContentTitle("You have a new message!")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot child : snapshot.getChildren()){
 
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(layout.getContext());
+                    DatabaseReference notice = database.getReference("users/" + currentUser.getDisplayName() +"/Messages/" + child.getKey());
+                    notice.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(layout.getContext(), CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
+                                    .setContentTitle("You have a new message!")
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                // notificationId is a unique int for each notification that you must define
-                notificationManager.notify(001, builder.build());
-            }
+                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(layout.getContext());
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            // notificationId is a unique int for each notification that you must define
+                            notificationManager.notify(Integer.valueOf(notice.getKey()), builder.build());
+                        }
 
-            }
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                        }
 
-            }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        }
 
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
             }
 
             @Override
