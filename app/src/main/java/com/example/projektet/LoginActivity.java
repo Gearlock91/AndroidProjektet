@@ -68,9 +68,10 @@ public class LoginActivity extends AppCompatActivity {
                     if(member.getNickName().equals(providedNick)){
                         email = member.getEmail();
                         Log.d(TAG,"Email found:" + email);
-                    }else{
-                        email = providedNick;
                     }
+                }
+                if(email == null){
+                    email = "empty";
                 }
 
                 if((email == null || email.isEmpty()) && (providedPass == null || providedPass.isEmpty())){
