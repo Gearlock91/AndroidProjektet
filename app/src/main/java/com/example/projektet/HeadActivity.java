@@ -19,7 +19,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,15 +33,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class HeadActivity extends AppCompatActivity implements AddFriendFragment.Listener, FriendsFragment.Listener {
+
+public class HeadActivity extends AppCompatActivity {
 
     String CHANNEL_ID = "1";
-    FriendsFragment friendsFragment;
     FirebaseDatabase database;
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
 
+    List<MemberData> fListDatabase;
+    ListView friendsList;
+    ArrayAdapter<String> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +63,55 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
         createNotificationChannel();
         notificationListener();
 
-        friendsFragment = new FriendsFragment();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.fragmentArea, friendsFragment);
-        ft.addToBackStack(null);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.commit();
+        fListDatabase = new ArrayList<MemberData>();
+        friendsList = (ListView) findViewById(R.id.friends_List);
+        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() +"/Friends");
+
+
+        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = (String) friendsList.getItemAtPosition(position).toString().trim();
+                Bundle nameBundle = new Bundle();
+                nameBundle.putString("name", name);
+                ChatFragment chatFragment = new ChatFragment();
+                chatFragment.setArguments(nameBundle);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.fragmentArea, chatFragment);
+                ft.addToBackStack(null);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
+            }
+        });
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                fListDatabase.clear();
+                arrayAdapter.clear();
+                MemberData friend = null;
+                for(DataSnapshot child : snapshot.getChildren()){
+                    friend = new MemberData(child.getValue().toString());
+                    fListDatabase.add(friend);
+                }
+                for(MemberData f : fListDatabase){
+                    arrayAdapter.add(f.getNickName());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        friendsList.setAdapter(arrayAdapter);
 
     }
 
@@ -77,7 +128,7 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.fragmentArea, addFriendFragment);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
+                ft.addToBackStack("addFriend");
                 ft.commit();
                 return false;
             }
@@ -87,27 +138,6 @@ public class HeadActivity extends AppCompatActivity implements AddFriendFragment
 
     }
 
-    @Override
-    public void changeFragment() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragmentArea, friendsFragment);
-        ft.addToBackStack(null);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.commit();
-    }
-
-    @Override
-    public void switchToChat(String name) {
-        Bundle nameBundle = new Bundle();
-        nameBundle.putString("name", name);
-        ChatFragment chatFragment = new ChatFragment();
-        chatFragment.setArguments(nameBundle);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragmentArea, chatFragment);
-        ft.addToBackStack(null);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.commit();
-    }
 
     private void notificationListener(){
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");

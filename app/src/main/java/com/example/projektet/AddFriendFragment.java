@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,25 +32,9 @@ public class AddFriendFragment extends Fragment {
     Button addFriend;
     EditText nickName;
     DatabaseReference myRef;
-    Listener listener;
+
     static int id = 0;
 
-    public interface Listener {
-        void changeFragment();
-    }
-
-    @Override
-    public void onAttach(Context context){
-        super.onAttach(context);
-
-        if(context instanceof AddFriendFragment.Listener){
-            this.listener = (Listener) context;
-        }
-        else{
-            throw new RuntimeException(context.toString() + "must implement listener interface.");
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,15 +50,23 @@ public class AddFriendFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                boolean successfull = false;
                 String wantedFriend = nickName.getText().toString().trim();
                 for(MemberData member : allMembers){
                     if(member.getNickName().equals(wantedFriend)){
                         myRef = FirebaseDatabase.getInstance().getReference("users/"+ currentUser.getDisplayName() + "/Friends");
                         myRef.child(String.valueOf(id++)).setValue(member.getNickName());
+                        getFragmentManager().popBackStack();
+                        Toast success = Toast.makeText(layout.getContext(), "Success!", Toast.LENGTH_SHORT);
+                        success.show();
+                        successfull = true;
+                    }
+                    if(!successfull){
+                        Toast invalidMember = Toast.makeText(layout.getContext(),"This member does not exist!", Toast.LENGTH_SHORT);
+                        invalidMember.show();
                     }
                 }
-                listener.changeFragment();
+
             }
         });
         return layout;

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:clipToPadding="false"
     android:focusableInTouchMode="true"
-    tools:context="com.example.projektet.MainActivity">
+    tools:context="com.example.projektet.LoginActivity">
 
 <!--    <EditText-->
 <!--        android:id="@+id/to_friend"-->

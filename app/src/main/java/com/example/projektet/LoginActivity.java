@@ -1,18 +1,14 @@
 package com.example.projektet;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.nfc.Tag;
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,54 +29,34 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-public class LoginFragment extends Fragment {
+public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
     List<MemberData> allMembers;
-
-    String neededEmail = null;
     EditText nickName;
     EditText password;
-
     Button registerButton;
     Button loginButton;
-
     Activity activity;
-
     DatabaseReference myRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+
         mAuth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    private void updateUI(FirebaseUser currentUser) {
-        Log.d(TAG, "CURRENT USER DISPLAY NAME" + currentUser.getDisplayName());
-        if(currentUser != null){
-          Intent intent = new Intent(activity, HeadActivity.class);
-          startActivity(intent);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_login, container, false);
-        activity = getActivity();
         allMembers = new ArrayList<MemberData>();
-        registerButton = (Button) layout.findViewById(R.id.registerButton);
-        loginButton = (Button) layout.findViewById(R.id.loginButton);
-        nickName = (EditText) layout.findViewById(R.id.loginNickname);
-        password = (EditText) layout.findViewById(R.id.editTextTextPassword);
+        registerButton = (Button) findViewById(R.id.registerButton);
+        loginButton = (Button) findViewById(R.id.loginButton);
+        nickName = (EditText) findViewById(R.id.loginNickname);
+        password = (EditText) findViewById(R.id.editTextTextPassword);
+        activity = this;
 
         allMembers = fetchMembers();
+
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,55 +67,67 @@ public class LoginFragment extends Fragment {
 
                 for(MemberData member : allMembers){
                     if(member.getNickName().equals(providedNick)){
-                       email = member.getEmail();
-                       Log.d(TAG,"Email found:" + email);
+                        email = member.getEmail();
+                        Log.d(TAG,"Email found:" + email);
+                    }else{
+                        email = providedNick;
                     }
                 }
 
-                if(!email.isEmpty() && !providedPass.isEmpty()){
-                    signIn(email, providedPass);
+                if((email == null || email.isEmpty()) && (providedPass == null || providedPass.isEmpty())){
+                    Toast.makeText(activity, "Invalid information: Check nickname or password.", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(activity, "Check email or password.", Toast.LENGTH_SHORT).show();
+                    signIn(email, providedPass);
                 }
             }
         });
-
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RegisterFragment registerFragment = new RegisterFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.contentFrame, registerFragment);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.contentFrame, registerFragment);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.addToBackStack(null);
                 ft.commit();
             }
         });
-
-        return layout;
     }
+
+    private void updateUI(FirebaseUser currentUser) {
+        if(currentUser != null){
+            Intent intent = new Intent(this, HeadActivity.class);
+            startActivity(intent);
+        }
+    }
+
 
     private void signIn(String email, String password){
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(activity, "Authentication failed: Check email or password.",
-                                    Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+        if((email == null || email.isEmpty()) || (password == null || password.isEmpty())){
+            Toast.makeText(this, "Empty nickname or password.", Toast.LENGTH_SHORT).show();
+        }else{
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "signInWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                updateUI(user);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                Toast.makeText(activity, "Authentication failed: Check nickname or password.",
+                                        Toast.LENGTH_SHORT).show();
+                                updateUI(null);
+                            }
                         }
-                    }
-                });
+                    });
+        }
+      
 
 
     }
