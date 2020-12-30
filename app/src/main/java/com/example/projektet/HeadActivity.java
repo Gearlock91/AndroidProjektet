@@ -82,7 +82,7 @@ public class HeadActivity extends AppCompatActivity {
                 ChatFragment chatFragment = new ChatFragment();
                 chatFragment.setArguments(nameBundle);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.fragmentArea, chatFragment);
+                ft.add(R.id.fragment_container, chatFragment);
                 ft.addToBackStack(null);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.commit();

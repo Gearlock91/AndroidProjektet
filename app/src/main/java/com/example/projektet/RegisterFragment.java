@@ -108,7 +108,9 @@ public class RegisterFragment extends Fragment {
     }
 
     private void updateUI(FirebaseUser currentUser) {
-
+        if(currentUser != null){
+            getFragmentManager().popBackStack();
+        }
     }
 
     @Override

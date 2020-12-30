@@ -32,7 +32,6 @@ import static android.content.ContentValues.TAG;
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-
     List<MemberData> allMembers;
     EditText nickName;
     EditText password;
@@ -45,8 +44,6 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-
         mAuth = FirebaseAuth.getInstance();
         allMembers = new ArrayList<MemberData>();
         registerButton = (Button) findViewById(R.id.registerButton);
@@ -56,8 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         activity = this;
 
         allMembers = fetchMembers();
+    }
 
-
+    @Override
+    public void onStart(){
+        super.onStart();
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.add(R.id.contentFrame, registerFragment);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
+                ft.addToBackStack("register");
                 ft.commit();
             }
         });
@@ -102,34 +102,26 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
     private void signIn(String email, String password){
 
-        if((email == null || email.isEmpty()) || (password == null || password.isEmpty())){
-            Toast.makeText(this, "Empty nickname or password.", Toast.LENGTH_SHORT).show();
-        }else{
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(activity, "Authentication failed: Check nickname or password.",
-                                        Toast.LENGTH_SHORT).show();
-                                updateUI(null);
-                            }
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(activity, "Authentication failed: Check nickname or password.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
                         }
-                    });
-        }
-      
-
-
+                    }
+                });
     }
     private List<MemberData> fetchMembers(){
         List<MemberData> members = new ArrayList<MemberData>();
