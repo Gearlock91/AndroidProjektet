@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -65,7 +66,9 @@ public class HeadActivity extends AppCompatActivity {
 
         fListDatabase = new ArrayList<MemberData>();
         friendsList = (ListView) findViewById(R.id.friends_List);
-        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
+
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
@@ -82,7 +85,7 @@ public class HeadActivity extends AppCompatActivity {
                 ChatFragment chatFragment = new ChatFragment();
                 chatFragment.setArguments(nameBundle);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(R.id.fragment_container, chatFragment);
+                ft.add(R.id.container_fragment, chatFragment);
                 ft.addToBackStack(null);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.commit();

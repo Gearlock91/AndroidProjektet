@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:clipToPadding="false"
     android:focusableInTouchMode="true"
-    android:background="@color/white"
+    android:background="@color/crypto_gray"
     tools:context="com.example.projektet.LoginActivity">
 
 <!--    <EditText-->

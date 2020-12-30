@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         nickName = (EditText) findViewById(R.id.loginNickname);
         password = (EditText) findViewById(R.id.editTextTextPassword);
         activity = this;
-
         allMembers = fetchMembers();
     }
 
