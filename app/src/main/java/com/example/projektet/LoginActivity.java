@@ -60,6 +60,14 @@ public class LoginActivity extends AppCompatActivity {
         activity = this;
         allMembers = fetchMembers();
 
+        try {
+            SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(this);
+
+
+        }catch (SQLiteException e){
+            Toast.makeText(this, "Database unavailable", Toast.LENGTH_LONG).show();
+        }
+
 
     }
 

@@ -1,5 +1,8 @@
 package com.example.projektet;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -7,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +29,16 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 
 public class ChatFragment extends Fragment {
@@ -75,10 +83,10 @@ public class ChatFragment extends Fragment {
                          Encryption encryption = new Encryption();
                          byte[] publicBytes = Base64.getDecoder().decode(snapshot.getValue().toString());
                          X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
-                         KeyFactory keyFactory = null;
                          try {
-                             keyFactory = KeyFactory.getInstance("RSA");
+                             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
                              PublicKey pubKey = keyFactory.generatePublic(keySpec);
+                             Log.d(TAG, pubKey.toString());
                              encryption.encryptMessage(message.getText().toString().getBytes(), pubKey);
                          } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                              e.printStackTrace();
@@ -171,6 +179,11 @@ public class ChatFragment extends Fragment {
 
     private void readMessageFromSender(){
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
+        SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(getContext());
+        SQLiteDatabase db = sqlCryptoHelper.getReadableDatabase();
+        Cursor friendCursor;
+
+        friendCursor = db.query("CRYPTOLEDGER", new String[]{"PRIVATE_KEY"}, ("FRIEND=" + "'"+fromSender+"'"),null,null,null,null);
         ValueEventListener firstRun = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -180,8 +193,20 @@ public class ChatFragment extends Fragment {
                     messageToList = new CryptoMessage(message.getValue().toString(),fromSender,false);
                     messageFromUser.add(messageToList);
                 }
+                Encryption encryption = new Encryption();
                 for(CryptoMessage m : messageFromUser){
-                    receivedMessagesAdapter.add(m);
+                    byte[] privateBytes = Base64.getDecoder().decode(friendCursor.getString(3));
+                    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
+                    KeyFactory keyFactory = null;
+                    try {
+                        keyFactory = KeyFactory.getInstance("RSA");
+                        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+                        encryption.decryptMessage(m.getText().getBytes(), privateKey);
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                        e.printStackTrace();
+                    }
+
+                    receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(),false));
                 }
             }
             @Override

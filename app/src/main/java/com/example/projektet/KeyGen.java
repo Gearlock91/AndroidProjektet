@@ -37,23 +37,4 @@ public class KeyGen {
         return pik;
     }
 
-//    public void printToFile() {
-//        try {
-//            FileOutputStream privateKey = new FileOutputStream("PrivateKey");
-//            FileOutputStream publicKey 	= new FileOutputStream("PublicKey");
-//            ObjectOutputStream oi;
-//            oi = new ObjectOutputStream(privateKey);
-//            oi.writeObject(java.util.Base64.getEncoder().encodeToString(puk.getEncoded()));
-//            oi = new ObjectOutputStream(publicKey);
-//            oi.writeObject(java.util.Base64.getEncoder().encodeToString(pik.getEncoded()));
-//            oi.close();
-//
-//        } catch (FileNotFoundException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//    }
 }
