@@ -211,7 +211,6 @@ public class ChatFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messageFromUser.clear();
-
                 CryptoMessage messageToList = null;
                 for(DataSnapshot message : snapshot.getChildren()){
                     messageToList = new CryptoMessage(message.getValue().toString(),fromSender,false);
@@ -229,7 +228,7 @@ public class ChatFragment extends Fragment {
 
             }
         };
-
+        receivedMessagesAdapter.clear();
         myRef.addValueEventListener(firstRun);
     }
 
