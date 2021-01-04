@@ -77,6 +77,8 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                  myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser + "/PubKey");
 
+                 String myMessage = message.getText().toString();
+
                  myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                      @Override
                      public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -86,12 +88,12 @@ public class ChatFragment extends Fragment {
                          try {
                              KeyFactory keyFactory = KeyFactory.getInstance("RSA");
                              PublicKey pubKey = keyFactory.generatePublic(keySpec);
-                             Log.d(TAG, pubKey.toString());
-                             encryption.encryptMessage(message.getText().toString().getBytes(), pubKey);
+                             encryption.encryptMessage(myMessage.getBytes(), pubKey);
                          } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                              e.printStackTrace();
                          }
                          myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser +"/");
+                         Log.d(TAG, encryption.getMessageEncrypted());
                          myRef.push().setValue(encryption.getMessageEncrypted());
                      }
 
@@ -101,7 +103,7 @@ public class ChatFragment extends Fragment {
                      }
                  });
 
-                receivedMessagesAdapter.add(new CryptoMessage(message.getText().toString(), true));
+                receivedMessagesAdapter.add(new CryptoMessage(myMessage, true));
                 message.setText("");
             }
         });
