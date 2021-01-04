@@ -42,13 +42,13 @@ public class FriendsListAdapter  extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater friendInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        FriendHolder holder = null;
+        FriendHolder holder = new FriendHolder();
         MemberData friend = friendsList.get(position);
         convertView = friendInflater.inflate(R.layout.friends_layout, null);
         holder.nickName = (TextView) convertView.findViewById(R.id.friend_holder);
