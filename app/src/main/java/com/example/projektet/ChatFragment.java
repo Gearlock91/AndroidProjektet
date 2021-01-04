@@ -221,7 +221,7 @@ public class ChatFragment extends Fragment {
                 for(CryptoMessage m : messageFromUser){
                     encryption.decryptMessage(m.getText().getBytes(), pKey);
                     Log.d(TAG, encryption.getMessageDecrypted());
-                    receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(),false));
+                    receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
                 }
             }
             @Override
