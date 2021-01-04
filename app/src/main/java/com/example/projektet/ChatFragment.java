@@ -55,7 +55,6 @@ public class ChatFragment extends Fragment {
     FirebaseDatabase database;
     String privateKey;
     PrivateKey pKey;
-    int id = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -63,17 +62,14 @@ public class ChatFragment extends Fragment {
         Bundle test = getArguments();
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
-        //readSentMessage();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_chat, container, false);
-        // Inflate the layout for this fragment
         sendButton = (ImageButton) layout.findViewById(R.id.send_button);
         message = (EditText) layout.findViewById(R.id.message_text);
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +111,6 @@ public class ChatFragment extends Fragment {
         receivedMessagesAdapter = new MessageAdapter(layout.getContext());
         messageFromUser = new ArrayList<CryptoMessage>();
         messageView = layout.findViewById(R.id.messages_view);
-        //readMessageFromSender();
 
         messageView.setAdapter(receivedMessagesAdapter);
         return layout;
@@ -158,7 +153,6 @@ public class ChatFragment extends Fragment {
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                receivedMessagesAdapter.add(new CryptoMessage(snapshot.getValue().toString(), fromSender,false));
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
                 receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
 
@@ -184,81 +178,6 @@ public class ChatFragment extends Fragment {
 
             }
         });
-    }
-
-
-//    private void readSentMessage(){
-//        List<String> sentMessages = new ArrayList<String>();
-//        myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser);
-//
-//        ValueEventListener sm = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for(DataSnapshot child : snapshot.getChildren()){
-//                    sentMessages.add(child.toString());
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        };
-//
-//        myRef.addValueEventListener(sm);
-//        myRef.removeEventListener(sm);
-//
-//    }
-
-    private void readMessageFromSender(){
-        myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
-        SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(getContext());
-        SQLiteDatabase db = sqlCryptoHelper.getReadableDatabase();
-        Cursor friendCursor;
-
-        friendCursor = db.query("CRYPTOLEDGER", new String[]{"FRIEND","PRIVATE_KEY"}, ("FRIEND=" + "'"+fromSender+"'"),null,null,null,null);
-
-        if(friendCursor.moveToFirst()){
-            privateKey = friendCursor.getString(1);
-            friendCursor.close();
-            db.close();
-        }
-
-        Encryption encryption = new Encryption();
-        byte[] privateBytes = Base64.getDecoder().decode(privateKey);
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
-        KeyFactory keyFactory = null;
-        try {
-            keyFactory = KeyFactory.getInstance("RSA");
-            pKey = keyFactory.generatePrivate(keySpec);
-
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            e.printStackTrace();
-        }
-
-        ValueEventListener firstRun = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                messageFromUser.clear();
-                CryptoMessage messageToList = null;
-                for(DataSnapshot message : snapshot.getChildren()){
-                    messageToList = new CryptoMessage(message.getValue().toString(),fromSender,false);
-                    messageFromUser.add(messageToList);
-                }
-
-                for(CryptoMessage m : messageFromUser){
-                    encryption.decryptMessage(m.getText().getBytes(), pKey);
-                    Log.d(TAG, encryption.getMessageDecrypted());
-                    receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-
-        myRef.addValueEventListener(firstRun);
-
     }
 
     @Override
