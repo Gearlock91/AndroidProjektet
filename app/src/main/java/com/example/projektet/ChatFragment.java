@@ -53,6 +53,8 @@ public class ChatFragment extends Fragment {
     ListView messageView;
     String fromSender;
     FirebaseDatabase database;
+    String privateKey;
+    PrivateKey pKey;
     int id = 0;
 
     @Override
@@ -185,29 +187,39 @@ public class ChatFragment extends Fragment {
         SQLiteDatabase db = sqlCryptoHelper.getReadableDatabase();
         Cursor friendCursor;
 
-        friendCursor = db.query("CRYPTOLEDGER", new String[]{"PRIVATE_KEY"}, ("FRIEND=" + "'"+fromSender+"'"),null,null,null,null);
+        friendCursor = db.query("CRYPTOLEDGER", new String[]{"FRIEND","PRIVATE_KEY"}, ("FRIEND=" + "'"+fromSender+"'"),null,null,null,null);
+
+        if(friendCursor.moveToFirst()){
+            privateKey = friendCursor.getString(1);
+            friendCursor.close();
+            db.close();
+        }
+
+        Encryption encryption = new Encryption();
+        byte[] privateBytes = Base64.getDecoder().decode(privateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+            pKey = keyFactory.generatePrivate(keySpec);
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
         ValueEventListener firstRun = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 messageFromUser.clear();
+
                 CryptoMessage messageToList = null;
                 for(DataSnapshot message : snapshot.getChildren()){
                     messageToList = new CryptoMessage(message.getValue().toString(),fromSender,false);
                     messageFromUser.add(messageToList);
                 }
-                Encryption encryption = new Encryption();
-                for(CryptoMessage m : messageFromUser){
-                    byte[] privateBytes = Base64.getDecoder().decode(friendCursor.getString(3));
-                    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
-                    KeyFactory keyFactory = null;
-                    try {
-                        keyFactory = KeyFactory.getInstance("RSA");
-                        PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-                        encryption.decryptMessage(m.getText().getBytes(), privateKey);
-                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                        e.printStackTrace();
-                    }
 
+                for(CryptoMessage m : messageFromUser){
+                    encryption.decryptMessage(m.getText().getBytes(), pKey);
                     receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(),false));
                 }
             }
