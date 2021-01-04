@@ -34,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,9 +83,9 @@ public class HeadActivity extends AppCompatActivity {
         friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = (String) friendsList.getItemAtPosition(position).toString().trim();
+                MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
                 Bundle nameBundle = new Bundle();
-                nameBundle.putString("name", name);
+                nameBundle.putString("name", friendMember.getNickName());
                 ChatFragment chatFragment = new ChatFragment();
                 chatFragment.setArguments(nameBundle);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
