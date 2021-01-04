@@ -55,7 +55,7 @@ public class AddFriendFragment extends Fragment {
                 for(MemberData member : allMembers){
                     if(member.getNickName().equals(wantedFriend)){
                         myRef = FirebaseDatabase.getInstance().getReference("users/"+ currentUser.getDisplayName() + "/Friends");
-                        myRef.child(String.valueOf(id++)).setValue(member.getNickName());
+                        myRef.child(member.getNickName()).setValue(member.getNickName());
                         getFragmentManager().popBackStack();
                         Toast success = Toast.makeText(layout.getContext(), "Success!", Toast.LENGTH_SHORT);
                         success.show();

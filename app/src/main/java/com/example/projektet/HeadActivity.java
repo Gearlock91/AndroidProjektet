@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HeadActivity extends AppCompatActivity {
+public class HeadActivity extends AppCompatActivity implements FriendsListAdapter.Listener {
 
     String CHANNEL_ID = "1";
     FirebaseDatabase database;
@@ -80,21 +81,21 @@ public class HeadActivity extends AppCompatActivity {
         DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() +"/Friends");
 
 
-        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
-                Bundle nameBundle = new Bundle();
-                nameBundle.putString("name", friendMember.getNickName());
-                ChatFragment chatFragment = new ChatFragment();
-                chatFragment.setArguments(nameBundle);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(R.id.container_fragment, chatFragment);
-                ft.addToBackStack(null);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
-            }
-        });
+//        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
+//                Bundle nameBundle = new Bundle();
+//                nameBundle.putString("name", friendMember.getNickName());
+//                ChatFragment chatFragment = new ChatFragment();
+//                chatFragment.setArguments(nameBundle);
+//                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//                ft.add(R.id.container_fragment, chatFragment);
+//                ft.addToBackStack(null);
+//                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                ft.commit();
+//            }
+//        });
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -125,6 +126,7 @@ public class HeadActivity extends AppCompatActivity {
         friendsList.setAdapter(friendAdapter);
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -214,5 +216,19 @@ public class HeadActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    @Override
+    public void startChat(int position) {
+        MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
+                Bundle nameBundle = new Bundle();
+                nameBundle.putString("name", friendMember.getNickName());
+                ChatFragment chatFragment = new ChatFragment();
+                chatFragment.setArguments(nameBundle);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.container_fragment, chatFragment);
+                ft.addToBackStack(null);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
     }
 }
