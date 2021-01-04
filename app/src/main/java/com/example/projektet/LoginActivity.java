@@ -6,6 +6,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +43,9 @@ public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     Activity activity;
     DatabaseReference myRef;
+    SQLiteDatabase db;
+    Cursor friendCursor;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -52,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.editTextTextPassword);
         activity = this;
         allMembers = fetchMembers();
+
+
     }
 
     @Override

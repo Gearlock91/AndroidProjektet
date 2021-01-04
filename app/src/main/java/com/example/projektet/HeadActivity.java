@@ -105,7 +105,7 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
                 friendAdapter.clear();
                 MemberData friend = null;
                 for(DataSnapshot child : snapshot.getChildren()){
-                    friend = new MemberData(child.getValue().toString());
+                    friend = new MemberData(child.getKey());
                     fListDatabase.add(friend);
                 }
                 for(MemberData f : fListDatabase){
