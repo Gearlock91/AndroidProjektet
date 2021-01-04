@@ -47,7 +47,9 @@ public class HeadActivity extends AppCompatActivity {
 
     List<MemberData> fListDatabase;
     ListView friendsList;
-    ArrayAdapter<String> arrayAdapter;
+   // ArrayAdapter<String> arrayAdapter;
+
+    FriendsListAdapter friendAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,8 @@ public class HeadActivity extends AppCompatActivity {
         fListDatabase = new ArrayList<MemberData>();
         friendsList = (ListView) findViewById(R.id.friends_List);
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        //arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        friendAdapter = new FriendsListAdapter(this);
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -96,14 +99,17 @@ public class HeadActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 fListDatabase.clear();
-                arrayAdapter.clear();
+                //arrayAdapter.clear();
+                friendAdapter.clear();
                 MemberData friend = null;
                 for(DataSnapshot child : snapshot.getChildren()){
                     friend = new MemberData(child.getValue().toString());
                     fListDatabase.add(friend);
                 }
                 for(MemberData f : fListDatabase){
-                    arrayAdapter.add(f.getNickName());
+                    //arrayAdapter.add(f.getNickName());
+                    friendAdapter.add(f);
+
                 }
 
             }
@@ -114,7 +120,8 @@ public class HeadActivity extends AppCompatActivity {
             }
         });
 
-        friendsList.setAdapter(arrayAdapter);
+        //friendsList.setAdapter(arrayAdapter);
+        friendsList.setAdapter(friendAdapter);
 
     }
 
@@ -140,7 +147,6 @@ public class HeadActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
 
     }
-
 
     private void notificationListener(){
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
