@@ -63,7 +63,7 @@ public class ChatFragment extends Fragment {
         Bundle test = getArguments();
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
-        readSentMessage();
+        //readSentMessage();
     }
 
     @Override
@@ -115,8 +115,8 @@ public class ChatFragment extends Fragment {
         receivedMessagesAdapter = new MessageAdapter(layout.getContext());
         messageFromUser = new ArrayList<CryptoMessage>();
         messageView = layout.findViewById(R.id.messages_view);
-        readMessageFromSender();
-        readOnce();
+        //readMessageFromSender();
+
         messageView.setAdapter(receivedMessagesAdapter);
         return layout;
     }
@@ -124,16 +124,44 @@ public class ChatFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+        readOnce();
         receivedMessagesAdapter.clear();
     }
 
 
     private void readOnce(){
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
+        SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(getContext());
+        SQLiteDatabase db = sqlCryptoHelper.getReadableDatabase();
+        Cursor friendCursor;
+
+        friendCursor = db.query("CRYPTOLEDGER", new String[]{"FRIEND","PRIVATE_KEY"}, ("FRIEND=" + "'"+fromSender+"'"),null,null,null,null);
+
+        if(friendCursor.moveToFirst()){
+            privateKey = friendCursor.getString(1);
+            friendCursor.close();
+            db.close();
+        }
+
+        Encryption encryption = new Encryption();
+        byte[] privateBytes = Base64.getDecoder().decode(privateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+            pKey = keyFactory.generatePrivate(keySpec);
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
         myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                receivedMessagesAdapter.add(new CryptoMessage(snapshot.getValue().toString(), fromSender,false));
+//                receivedMessagesAdapter.add(new CryptoMessage(snapshot.getValue().toString(), fromSender,false));
+                encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
+                receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
+
             }
 
             @Override
@@ -159,27 +187,27 @@ public class ChatFragment extends Fragment {
     }
 
 
-    private void readSentMessage(){
-        List<String> sentMessages = new ArrayList<String>();
-        myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser);
-
-        ValueEventListener sm = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot child : snapshot.getChildren()){
-                    sentMessages.add(child.toString());
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-
-        myRef.addValueEventListener(sm);
-        myRef.removeEventListener(sm);
-
-    }
+//    private void readSentMessage(){
+//        List<String> sentMessages = new ArrayList<String>();
+//        myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser);
+//
+//        ValueEventListener sm = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                for(DataSnapshot child : snapshot.getChildren()){
+//                    sentMessages.add(child.toString());
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        };
+//
+//        myRef.addValueEventListener(sm);
+//        myRef.removeEventListener(sm);
+//
+//    }
 
     private void readMessageFromSender(){
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
@@ -228,8 +256,9 @@ public class ChatFragment extends Fragment {
 
             }
         };
-        receivedMessagesAdapter.clear();
+
         myRef.addValueEventListener(firstRun);
+
     }
 
     @Override
