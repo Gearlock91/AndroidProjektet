@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -73,35 +74,49 @@ public class ChatFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser + "/PubKey");
-
                  String myMessage = message.getText().toString();
 
-                 myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                     @Override
-                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                         Encryption encryption = new Encryption();
-                         byte[] publicBytes = Base64.getDecoder().decode(snapshot.getValue().toString());
-                         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
-                         try {
-                             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-                             PublicKey pubKey = keyFactory.generatePublic(keySpec);
-                             encryption.encryptMessage(myMessage.getBytes(), pubKey);
-                         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                             e.printStackTrace();
+                     myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser);
+
+                     myRef.addValueEventListener(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                             if(snapshot.exists()){
+                                 myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser + "/PubKey");
+                                 myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                     @Override
+                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                         Encryption encryption = new Encryption();
+                                         byte[] publicBytes = Base64.getDecoder().decode(snapshot.getValue().toString());
+                                         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+                                         try {
+                                             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                                             PublicKey pubKey = keyFactory.generatePublic(keySpec);
+                                             encryption.encryptMessage(myMessage.getBytes(), pubKey);
+                                         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                                             e.printStackTrace();
+                                         }
+                                         myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser +"/");
+                                         Log.d(TAG, encryption.getMessageEncrypted());
+                                         myRef.push().setValue(encryption.getMessageEncrypted());
+                                     }
+
+                                     @Override
+                                     public void onCancelled(@NonNull DatabaseError error) {
+
+                                     }
+                                 });
+                                 receivedMessagesAdapter.add(new CryptoMessage(myMessage, true));
+                             }else{
+                                 Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
+                             }
                          }
-                         myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser +"/");
-                         Log.d(TAG, encryption.getMessageEncrypted());
-                         myRef.push().setValue(encryption.getMessageEncrypted());
-                     }
 
-                     @Override
-                     public void onCancelled(@NonNull DatabaseError error) {
+                         @Override
+                         public void onCancelled(@NonNull DatabaseError error) {
 
-                     }
-                 });
-
-                receivedMessagesAdapter.add(new CryptoMessage(myMessage, true));
+                         }
+                     });
                 message.setText("");
             }
         });
