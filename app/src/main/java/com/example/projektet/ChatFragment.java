@@ -134,13 +134,8 @@ public class ChatFragment extends Fragment {
         readOnce();
         if(savedInstanceState != null){
             messages = savedInstanceState.getParcelableArrayList("messages");
-            int id = 0;
-            for(CryptoMessage m : messages){
-                    if(receivedMessagesAdapter.getItem(id).equals(m)){
-
-                    }else{
-                        receivedMessagesAdapter.add(m);
-                    }
+            for(CryptoMessage m : messages) {
+                receivedMessagesAdapter.add(m);
             }
         }
         messageView.setAdapter(receivedMessagesAdapter);
