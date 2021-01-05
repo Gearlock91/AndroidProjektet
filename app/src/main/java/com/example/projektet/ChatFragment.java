@@ -157,14 +157,6 @@ public class ChatFragment extends Fragment {
             super.onSaveInstanceState(saveInstanceState);
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        //readOnce();
-        //receivedMessagesAdapter.clear();
-    }
-
-
     private void readOnce(){
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
         SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(getContext());
