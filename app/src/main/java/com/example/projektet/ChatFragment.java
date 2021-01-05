@@ -133,6 +133,8 @@ public class ChatFragment extends Fragment {
         messageView = layout.findViewById(R.id.messages_view);
         readOnce();
         if(savedInstanceState != null){
+            messages.clear();
+            receivedMessagesAdapter.clear();
             messages = savedInstanceState.getParcelableArrayList("messages");
             for(CryptoMessage m : messages) {
                 receivedMessagesAdapter.add(m);
@@ -147,6 +149,7 @@ public class ChatFragment extends Fragment {
             saveInstanceState.clear();
             saveInstanceState.putParcelableArrayList("messages", messages);
             super.onSaveInstanceState(saveInstanceState);
+
     }
 
     private void readOnce(){
