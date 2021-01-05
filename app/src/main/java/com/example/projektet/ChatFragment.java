@@ -67,15 +67,8 @@ public class ChatFragment extends Fragment {
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
 
+
     }
-//    @Override
-//    public void onActivityCreated(Bundle saveInstanceState){
-//        super.onActivityCreated(saveInstanceState);
-//        if(saveInstanceState != null){
-//                receivedMessagesAdapter.add(new CryptoMessage(saveInstanceState.getString("message"), true));
-//        }
-//        messageView.setAdapter(receivedMessagesAdapter);
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,6 +112,7 @@ public class ChatFragment extends Fragment {
                                  });
                                  CryptoMessage save = new CryptoMessage(myMessage, true);
                                  receivedMessagesAdapter.add(save);
+                                 messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
                                  messages.add(save);
                              }else{
                                  Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
@@ -189,7 +183,7 @@ public class ChatFragment extends Fragment {
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
                 receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
                 messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
-
+                messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
             }
 
             @Override
