@@ -3,13 +3,13 @@ package com.example.projektet;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,12 +50,15 @@ public class ChatFragment extends Fragment {
     FirebaseAuth myAuth;
     String currentUser;
     MessageAdapter receivedMessagesAdapter;
-    List<CryptoMessage> messageFromUser;
+    ArrayList<CryptoMessage> messages;
     ListView messageView;
     String fromSender;
     FirebaseDatabase database;
     String privateKey;
     PrivateKey pKey;
+    CryptoMessage saveSentMessage;
+
+    int id = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -63,7 +66,16 @@ public class ChatFragment extends Fragment {
         Bundle test = getArguments();
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
+
     }
+//    @Override
+//    public void onActivityCreated(Bundle saveInstanceState){
+//        super.onActivityCreated(saveInstanceState);
+//        if(saveInstanceState != null){
+//                receivedMessagesAdapter.add(new CryptoMessage(saveInstanceState.getString("message"), true));
+//        }
+//        messageView.setAdapter(receivedMessagesAdapter);
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,13 +112,14 @@ public class ChatFragment extends Fragment {
                                          Log.d(TAG, encryption.getMessageEncrypted());
                                          myRef.push().setValue(encryption.getMessageEncrypted());
                                      }
-
                                      @Override
                                      public void onCancelled(@NonNull DatabaseError error) {
 
                                      }
                                  });
-                                 receivedMessagesAdapter.add(new CryptoMessage(myMessage, true));
+                                 CryptoMessage save = new CryptoMessage(myMessage, true);
+                                 receivedMessagesAdapter.add(save);
+                                 messages.add(save);
                              }else{
                                  Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
                              }
@@ -124,18 +137,31 @@ public class ChatFragment extends Fragment {
         myAuth = FirebaseAuth.getInstance();
         currentUser = myAuth.getCurrentUser().getDisplayName();
         receivedMessagesAdapter = new MessageAdapter(layout.getContext());
-        messageFromUser = new ArrayList<CryptoMessage>();
+        messages = new ArrayList<CryptoMessage>();
         messageView = layout.findViewById(R.id.messages_view);
+        readOnce();
+        if(savedInstanceState != null){
+            messages = savedInstanceState.getParcelableArrayList("messages");
+            for(CryptoMessage m : messages){
+                receivedMessagesAdapter.add(m);
+            }
+        }
 
         messageView.setAdapter(receivedMessagesAdapter);
         return layout;
     }
 
     @Override
+    public void onSaveInstanceState(Bundle saveInstanceState){
+            saveInstanceState.putParcelableArrayList("messages", messages);
+            super.onSaveInstanceState(saveInstanceState);
+    }
+
+    @Override
     public void onStart(){
         super.onStart();
-        readOnce();
-        receivedMessagesAdapter.clear();
+        //readOnce();
+        //receivedMessagesAdapter.clear();
     }
 
 
@@ -170,6 +196,7 @@ public class ChatFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
                 receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
+                messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
 
             }
 

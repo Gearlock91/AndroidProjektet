@@ -91,10 +91,11 @@ public class LoginActivity extends AppCompatActivity {
                     email = "empty";
                 }
 
-                if((email == null || email.isEmpty()) && (providedPass == null || providedPass.isEmpty())){
-                    Toast.makeText(activity, "Invalid information: Check nickname or password.", Toast.LENGTH_SHORT).show();
+                if((email == null || email.isEmpty()) || (providedPass == null || providedPass.isEmpty())){
+                    Toast.makeText(activity, "Missing information: Check nickname or password.", Toast.LENGTH_SHORT).show();
                 }else{
                     signIn(email, providedPass);
+                    clearFields();
                 }
             }
         });
@@ -135,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(activity, "Authentication failed: Check nickname or password.",
                                     Toast.LENGTH_SHORT).show();
+                            clearFields();
                             updateUI(null);
                         }
                     }
@@ -166,4 +168,8 @@ public class LoginActivity extends AppCompatActivity {
         return members;
     }
 
+    private void clearFields(){
+        nickName.setText("");
+        password.setText("");
+    }
 }

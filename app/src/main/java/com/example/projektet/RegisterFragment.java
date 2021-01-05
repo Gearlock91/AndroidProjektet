@@ -67,11 +67,15 @@ public class RegisterFragment extends Fragment {
 
     public void createAccount(MemberData member){
         if(member != null){
-            if((member.getEmail() == null || member.getEmail().isEmpty()) || (member.getPassword() == null || member.getPassword().isEmpty())){
+            if((member.getEmail() == null || member.getEmail().isEmpty()) || (member.getPassword() == null || member.getPassword().isEmpty()) || (member.getNickName() == null || member.getNickName().isEmpty())){
                 Toast.makeText(activity, "All fields must be filled in.", Toast.LENGTH_SHORT).show();
+                email.setText("");
+                password.setText("");
+                nickName.setText("");
             }else{
                 if(member.getPassword().length() < 6){
                     Toast.makeText(activity,"Password needs to be over 6 digits.", Toast.LENGTH_SHORT).show();
+                    password.setText("");
                 }else{
                     mAuth.createUserWithEmailAndPassword(member.getEmail(), member.getPassword())
                             .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
@@ -103,7 +107,7 @@ public class RegisterFragment extends Fragment {
                 }
             }
         }else{
-            Toast.makeText(activity, "FEEEEEEEEEEl", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Something went terribly wrong, try again", Toast.LENGTH_SHORT).show();
         }
     }
 

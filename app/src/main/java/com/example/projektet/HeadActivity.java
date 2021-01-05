@@ -50,13 +50,17 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
     List<MemberData> fListDatabase;
     ListView friendsList;
    // ArrayAdapter<String> arrayAdapter;
-
+    ChatFragment chatFragment;
     FriendsListAdapter friendAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_head);
+
+        if(savedInstanceState != null){
+            chatFragment = (ChatFragment) getSupportFragmentManager().getFragment(savedInstanceState, "chatFragment");
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -223,12 +227,21 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
                 Bundle nameBundle = new Bundle();
                 nameBundle.putString("name", friendMember.getNickName());
-                ChatFragment chatFragment = new ChatFragment();
+                if(chatFragment == null){
+                    chatFragment = new ChatFragment();
+                }
                 chatFragment.setArguments(nameBundle);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.add(R.id.container_fragment, chatFragment);
                 ft.addToBackStack(null);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, "chatFragment", chatFragment);
     }
 }
