@@ -30,17 +30,19 @@ import java.util.List;
 
 /**
  * Fragmentet som hanterar när man adderar nya vänner till appen.
+ * Denna klass skapa även nyckelparet som behövs vid krypteringen.
+ * {@link KeyGen}
  * @author Andreas Roghe, Sofia Ågren
  * @version 2020-01-05
  */
 
 public class AddFriendFragment extends Fragment {
 
-    List<MemberData> allMembers;
-    Button addFriend;
-    EditText nickName;
-    DatabaseReference myRef;
-    SQLiteDatabase db;
+    private List<MemberData> allMembers;
+    private Button addFriend;
+    private EditText nickName;
+    private DatabaseReference myRef;
+    private SQLiteDatabase db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

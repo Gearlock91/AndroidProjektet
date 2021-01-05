@@ -42,22 +42,26 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-
+/**
+ * Detta fragmment hanterar all kommunikation mellan två användre.
+ * @author Andres Roghe, Sofia Ågren
+ * @version 2020-01-05
+ */
 public class ChatFragment extends Fragment {
 
-    EditText message;
-    ImageButton sendButton;
-    DatabaseReference myRef;
-    FirebaseAuth myAuth;
-    String currentUser;
-    MessageAdapter receivedMessagesAdapter;
-    ArrayList<CryptoMessage> messages;
-    ListView messageView;
-    String fromSender;
-    FirebaseDatabase database;
-    String privateKey;
-    PrivateKey pKey;
-    ChildEventListener childListener;
+    private EditText message;
+    private ImageButton sendButton;
+    private DatabaseReference myRef;
+    private FirebaseAuth myAuth;
+    private String currentUser;
+    private MessageAdapter receivedMessagesAdapter;
+   // private ArrayList<CryptoMessage> messages;
+    private ListView messageView;
+    private String fromSender;
+    private FirebaseDatabase database;
+    private String privateKey;
+    private PrivateKey pKey;
+    private ChildEventListener childListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,7 +78,7 @@ public class ChatFragment extends Fragment {
         myAuth = FirebaseAuth.getInstance();
         currentUser = myAuth.getCurrentUser().getDisplayName();
         receivedMessagesAdapter = new MessageAdapter(layout.getContext());
-        messages = new ArrayList<CryptoMessage>();
+       // messages = new ArrayList<CryptoMessage>();
         messageView = layout.findViewById(R.id.messages_view);
 
         if (savedInstanceState != null) {
@@ -82,6 +86,7 @@ public class ChatFragment extends Fragment {
         }
         sendButton = (ImageButton) layout.findViewById(R.id.send_button);
         message = (EditText) layout.findViewById(R.id.message_text);
+
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +113,6 @@ public class ChatFragment extends Fragment {
                                         e.printStackTrace();
                                     }
                                     myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser + "/");
-                                    Log.d(TAG, encryption.getMessageEncrypted());
                                     myRef.push().setValue(encryption.getMessageEncrypted());
                                 }
 
@@ -119,7 +123,7 @@ public class ChatFragment extends Fragment {
                             CryptoMessage save = new CryptoMessage(myMessage, true);
                             receivedMessagesAdapter.add(save);
                             messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
-                            messages.add(save);
+                            //messages.add(save);
                         } else {
                             Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
                         }
@@ -180,7 +184,7 @@ public class ChatFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
                 receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
-                messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
+               // messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
                 messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
             }
 
