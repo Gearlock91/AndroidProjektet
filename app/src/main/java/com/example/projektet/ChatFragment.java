@@ -146,13 +146,13 @@ public class ChatFragment extends Fragment {
                 receivedMessagesAdapter.add(m);
             }
         }
-
         messageView.setAdapter(receivedMessagesAdapter);
         return layout;
     }
 
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState){
+            saveInstanceState.clear();
             saveInstanceState.putParcelableArrayList("messages", messages);
             super.onSaveInstanceState(saveInstanceState);
     }
