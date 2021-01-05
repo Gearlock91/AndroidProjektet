@@ -3,6 +3,8 @@ package com.example.projektet;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +98,10 @@ public class FriendsListAdapter extends BaseAdapter {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("users/" + currentUser.getDisplayName() + "/" + "Friends/" + friendsList.get(position).getNickName());
                 ref.removeValue();
+
+                SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(FriendsListAdapter.this.context);
+                SQLiteDatabase db = sqlCryptoHelper.getWritableDatabase();
+                db.delete("CRYPTOLEDGER", "FRIEND=" + "'" + friend.getNickName() + "'",null);
                 friendsList.remove(position);
                 notifyDataSetChanged();
             }

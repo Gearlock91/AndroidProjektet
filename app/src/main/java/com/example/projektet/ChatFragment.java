@@ -66,8 +66,6 @@ public class ChatFragment extends Fragment {
         Bundle test = getArguments();
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
-
-
     }
 
     @Override
@@ -136,8 +134,13 @@ public class ChatFragment extends Fragment {
         readOnce();
         if(savedInstanceState != null){
             messages = savedInstanceState.getParcelableArrayList("messages");
+            int id = 0;
             for(CryptoMessage m : messages){
-                receivedMessagesAdapter.add(m);
+                    if(receivedMessagesAdapter.getItem(id).equals(m)){
+
+                    }else{
+                        receivedMessagesAdapter.add(m);
+                    }
             }
         }
         messageView.setAdapter(receivedMessagesAdapter);

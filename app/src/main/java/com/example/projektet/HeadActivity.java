@@ -98,9 +98,7 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
                     fListDatabase.add(friend);
                 }
                 for(MemberData f : fListDatabase){
-
                     friendAdapter.add(f);
-
                 }
 
             }

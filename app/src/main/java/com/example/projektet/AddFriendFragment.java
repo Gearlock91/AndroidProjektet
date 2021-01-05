@@ -67,7 +67,7 @@ public class AddFriendFragment extends Fragment {
         addFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean successfull = false;
+                boolean successful = false;
                 String wantedFriend = nickName.getText().toString().trim();
                 for(MemberData member : allMembers){
                     if(member.getNickName().equals(wantedFriend)){
@@ -83,13 +83,14 @@ public class AddFriendFragment extends Fragment {
                         getFragmentManager().popBackStack();
                         Toast success = Toast.makeText(layout.getContext(), "Success!", Toast.LENGTH_SHORT);
                         success.show();
-                        successfull = true;
+                        successful = true;
                     }
-                    if(!successfull){
-                        Toast invalidMember = Toast.makeText(layout.getContext(),"This member does not exist!", Toast.LENGTH_SHORT);
-                        invalidMember.show();
-                        nickName.setText("");
-                    }
+                }
+                if(!successful){
+                    Toast invalidMember = Toast.makeText(layout.getContext(),"This member does not exist!", Toast.LENGTH_SHORT);
+                    invalidMember.show();
+                    nickName.setText("");
+                    successful = false;
                 }
 
             }
