@@ -11,6 +11,11 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+/**
+ * Denna klass hanterar kryptering.
+ * @author Andres Roghe, Sofia Ågren.
+ * @version 2020-01-05
+ */
 public class Encryption {
 
     private static final String ALGORITHM = "RSA";

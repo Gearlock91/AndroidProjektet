@@ -1,5 +1,10 @@
 package com.example.projektet;
 
+/**
+ * Denna klass hanterar medlemsdata.
+ * @author Andreas Roghe, Sofia Ågren
+ * @version 2020-01-05
+ */
 class MemberData {
 
     private final String nickName;

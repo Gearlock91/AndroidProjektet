@@ -6,6 +6,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+/**
+ * Klassen som skapar vår privata databas.
+ * @author Andreas Roghe, Sofia Ågren.
+ * @version 2020-01-05.
+ */
 public class SqlCryptoHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Crypto";

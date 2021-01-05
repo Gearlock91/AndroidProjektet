@@ -1,11 +1,9 @@
 package com.example.projektet;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,23 +11,25 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Denna klass är en adapter för att hålla reda på vännerlistan.
+ * @author Andres Roghe, Sofia Ågren.
+ * @version 2020-01-05
+ */
 public class FriendsListAdapter extends BaseAdapter {
 
-    List<MemberData> friendsList = new ArrayList<MemberData>();
-    Context context;
-    Listener listener;
+    private List<MemberData> friendsList = new ArrayList<MemberData>();
+    private Context context;
+    private Listener listener;
 
     public interface Listener {
         void startChat(int position);

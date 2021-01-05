@@ -3,6 +3,12 @@ package com.example.projektet;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Denna klass är en hållare för de krypterade meddelandena.
+ * Interface Parcelable möjligör att skicka dessa objekt med androids bundle-klass.
+ * @author Andreas Roghe, Sofia Ågren.
+ * @version 2020-01-05
+ */
 public class CryptoMessage implements Parcelable {
 
     private final String text;
@@ -12,7 +18,6 @@ public class CryptoMessage implements Parcelable {
     public CryptoMessage(String text, boolean belongsToCurrentUser) {
         this(text, null, belongsToCurrentUser);
     }
-
 
     public CryptoMessage(String text, String memberNickname, boolean belongsToCurrentUser) {
         this.text = text;
@@ -49,7 +54,6 @@ public class CryptoMessage implements Parcelable {
     public boolean isBelongsToCurrentUser() {
         return belongsToCurrentUser;
     }
-
 
     @Override
     public int describeContents() {

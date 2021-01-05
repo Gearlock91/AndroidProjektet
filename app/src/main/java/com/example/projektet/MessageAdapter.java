@@ -14,6 +14,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Denna klass är en styrklass för hur meddelandena skall se ut. Den är tagen ifrån
+ * {@see <a href="https://www.scaledrone.com/blog/android-chat-tutorial/">Scaldrone tutorial</a>}
+ * med endas enkla modifikationer för att fungera till våra andra klasser.
+ * @author Andres Roghe, Sofia Ågren.
+ * @version 2020-01-05
+ */
 public class MessageAdapter extends BaseAdapter implements Parcelable {
 
     List<CryptoMessage> messages = new ArrayList<CryptoMessage>();

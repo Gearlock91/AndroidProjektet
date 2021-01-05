@@ -55,7 +55,6 @@ public class ChatFragment extends Fragment {
     private FirebaseAuth myAuth;
     private String currentUser;
     private MessageAdapter receivedMessagesAdapter;
-   // private ArrayList<CryptoMessage> messages;
     private ListView messageView;
     private String fromSender;
     private FirebaseDatabase database;
@@ -78,7 +77,6 @@ public class ChatFragment extends Fragment {
         myAuth = FirebaseAuth.getInstance();
         currentUser = myAuth.getCurrentUser().getDisplayName();
         receivedMessagesAdapter = new MessageAdapter(layout.getContext());
-       // messages = new ArrayList<CryptoMessage>();
         messageView = layout.findViewById(R.id.messages_view);
 
         if (savedInstanceState != null) {
@@ -123,7 +121,6 @@ public class ChatFragment extends Fragment {
                             CryptoMessage save = new CryptoMessage(myMessage, true);
                             receivedMessagesAdapter.add(save);
                             messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
-                            //messages.add(save);
                         } else {
                             Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
                         }
@@ -184,7 +181,6 @@ public class ChatFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
                 receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
-               // messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
                 messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
             }
 

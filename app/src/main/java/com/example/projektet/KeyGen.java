@@ -1,12 +1,17 @@
 package com.example.projektet;
 
-import java.io.FileOutputStream;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+/**
+ * Denna klass skapar ett unikt nyckelpar för kryptering.
+ * @author Andreas Roghe, Sofia Ågren
+ * @version 2020-01-05
+ */
 public class KeyGen {
     private final String ALGORITHM = "RSA";
     private PublicKey puk;
