@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Message;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,6 +58,7 @@ public class ChatFragment extends Fragment {
     String privateKey;
     PrivateKey pKey;
     CryptoMessage saveSentMessage;
+    ChildEventListener childListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -78,11 +80,13 @@ public class ChatFragment extends Fragment {
         messageView = layout.findViewById(R.id.messages_view);
 
         if(savedInstanceState != null) {
-            messages = savedInstanceState.getParcelableArrayList("messages");
-            for (CryptoMessage m : messages) {
-                receivedMessagesAdapter.add(m);
-            }
-            messages.clear();
+//            messages = savedInstanceState.getParcelableArrayList("messages");
+//            for (CryptoMessage m : messages) {
+//                receivedMessagesAdapter.add(m);
+//            }
+//            messages = new ArrayList<CryptoMessage>();
+
+            receivedMessagesAdapter.setList(savedInstanceState.getParcelableArrayList("adapter"));
         }
 
         sendButton = (ImageButton) layout.findViewById(R.id.send_button);
@@ -151,7 +155,8 @@ public class ChatFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState){
-            saveInstanceState.putParcelableArrayList("messages", messages);
+            //saveInstanceState.putParcelableArrayList("messages", messages);
+              saveInstanceState.putParcelableArrayList("adapter", (ArrayList) receivedMessagesAdapter.getList());
             super.onSaveInstanceState(saveInstanceState);
     }
 
@@ -181,7 +186,7 @@ public class ChatFragment extends Fragment {
             e.printStackTrace();
         }
 
-        myRef.addChildEventListener(new ChildEventListener() {
+        childListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
@@ -208,7 +213,11 @@ public class ChatFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+
+        myRef.addChildEventListener(childListener);
+
+
     }
 
     @Override
@@ -216,6 +225,7 @@ public class ChatFragment extends Fragment {
         super.onDestroy();
         myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
         myRef.removeValue();
+        myRef.removeEventListener(childListener);
     }
 
 }

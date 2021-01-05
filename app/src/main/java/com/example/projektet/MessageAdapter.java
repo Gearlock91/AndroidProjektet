@@ -3,6 +3,8 @@ package com.example.projektet;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +15,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 // MessageAdapter.java
-public class MessageAdapter extends BaseAdapter {
+public class MessageAdapter extends BaseAdapter implements Parcelable {
 
     List<CryptoMessage> messages = new ArrayList<CryptoMessage>();
     Context context;
 
     public MessageAdapter(Context context) {
         this.context = context;
+    }
+
+    protected MessageAdapter(Parcel in) {
+        messages = in.createTypedArrayList(CryptoMessage.CREATOR);
+    }
+
+    public static final Creator<MessageAdapter> CREATOR = new Creator<MessageAdapter>() {
+        @Override
+        public MessageAdapter createFromParcel(Parcel in) {
+            return new MessageAdapter(in);
+        }
+
+        @Override
+        public MessageAdapter[] newArray(int size) {
+            return new MessageAdapter[size];
+        }
+    };
+
+    public List<CryptoMessage> getList(){
+        return messages;
+    }
+
+    public void setList(List<CryptoMessage> list){
+        messages = list;
     }
 
     public void clear(){
@@ -73,6 +99,15 @@ public class MessageAdapter extends BaseAdapter {
         return convertView;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(messages);
+    }
 }
 
 class MessageViewHolder {
