@@ -62,8 +62,8 @@ public class ChatFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle test = getArguments();
-        fromSender = test.getString("name");
+        Bundle nickName = getArguments();
+        fromSender = nickName.getString("name");
         database = FirebaseDatabase.getInstance();
     }
 

@@ -31,15 +31,22 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
+/**
+ * Detta fragment hanterar en ny användare som skall registrera sig
+ * till appen för att logga in.
+ * @author Andreas Roghe, Sofia Ågren
+ * @version 2020-01-05
+ */
+
 public class RegisterFragment extends Fragment {
 
-    FirebaseAuth mAuth;
-    Button registerButton;
-    EditText email;
-    EditText nickName;
-    EditText password;
-    Activity activity;
-    List<MemberData> membersList;
+    private FirebaseAuth mAuth;
+    private Button registerButton;
+    private EditText email;
+    private EditText nickName;
+    private EditText password;
+    private Activity activity;
+    private List<MemberData> membersList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +54,7 @@ public class RegisterFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference members = database.getReference().child("users/");
         membersList = new ArrayList<MemberData>();
-
+        //Hämtar in all befintliga användare och deras användarnamn.
         members.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -63,6 +70,11 @@ public class RegisterFragment extends Fragment {
         });
     }
 
+    /**
+     * Skapar en ny användare sålänge som inte det angivna användarnamnet
+     * inte redan är taget.
+     * @param member
+     */
     public void createAccount(MemberData member) {
         if (member != null) {
             if ((member.getEmail() == null || member.getEmail().isEmpty()) || (member.getPassword() == null || member.getPassword().isEmpty()) || (member.getNickName() == null || member.getNickName().isEmpty())) {
@@ -109,6 +121,10 @@ public class RegisterFragment extends Fragment {
         }
     }
 
+    /**
+     * Om registreringen lyckades. Återgå till login-skärmen.
+     * @param currentUser
+     */
     private void updateUI(FirebaseUser currentUser) {
         if (currentUser != null) {
             getFragmentManager().popBackStack();
@@ -123,7 +139,7 @@ public class RegisterFragment extends Fragment {
         activity = getActivity();
         mAuth = FirebaseAuth.getInstance();
         registerButton = (Button) layout.findViewById(R.id.registerUserButton);
-
+        //Kontroll för att se om det angivna användarnamnet inte redan är taget.
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

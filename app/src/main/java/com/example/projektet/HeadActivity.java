@@ -40,24 +40,32 @@ import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Aktiviteten som hanterar alla användarens aktiviteter. Så som
+ * att byta till respektive chatt-fragment {@link ChatFragment} eller gå till fragmentet
+ * som lägger till användare {@link AddFriendFragment}.
+ * @author Andreas Roghe, Sofia Ågren
+ * @version 2020-01-05
+ */
 
 public class HeadActivity extends AppCompatActivity implements FriendsListAdapter.Listener {
 
-    String CHANNEL_ID = "1";
-    FirebaseDatabase database;
-    FirebaseUser currentUser;
-    FirebaseAuth mAuth;
-    List<MemberData> fListDatabase;
-    ListView friendsList;
-    ChatFragment chatFragment;
-    AddFriendFragment addFriendFragment;
-    FriendsListAdapter friendAdapter;
+    private String CHANNEL_ID = "1";
+    private FirebaseDatabase database;
+    private FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
+    private List<MemberData> fListDatabase;
+    private ListView friendsList;
+    private ChatFragment chatFragment;
+    private AddFriendFragment addFriendFragment;
+    private FriendsListAdapter friendAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_head);
 
+        //Sparar ner fragment för att kunna återskapa om skärmen roteras.
         if (savedInstanceState != null) {
             chatFragment = (ChatFragment) getSupportFragmentManager().getFragment(savedInstanceState, "chatFragment");
             addFriendFragment = (AddFriendFragment) getSupportFragmentManager().getFragment(savedInstanceState, "addFriendFragment");
@@ -107,6 +115,11 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         friendsList.setAdapter(friendAdapter);
     }
 
+    /**
+     * Lägger till en knapp i meny-baren för att kunna läggatill vänner.
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -128,6 +141,10 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Skapar en notifications lyssnare i syftet att lyssna på meddelanden som kommer
+     * in till användaren.
+     */
     private void notificationListener() {
         DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() + "/Messages");
         notification.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -142,9 +159,7 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
                                     .setSmallIcon(R.drawable.baseline_notification_important_white_18dp)
                                     .setContentTitle("You have a new message!")
                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
                             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(HeadActivity.this);
-
                             // notificationId is a unique int for each notification that you must define
                             notificationManager.notify((int) System.currentTimeMillis(), builder.build());
                         }
@@ -180,6 +195,11 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
 
     }
 
+    /**
+     * Enligt Android-developers behövdes de skapas en ny notificationskanal
+     * för att lyssna på händelser och skicka till Androids notifikationshanterare.
+     * Koden är tagen från {@see <a href="https://developer.android.com/training/notify-user/channels">Android-Developer: Notify users</a>}
+     */
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -196,6 +216,11 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         }
     }
 
+    /**
+     * Funktionen implementars utifrån det interface som deklareades i
+     * {@link FriendsListAdapter}.
+     * @param position
+     */
     @Override
     public void startChat(int position) {
         MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
@@ -212,6 +237,10 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         ft.commit();
     }
 
+    /**
+     * Sparar ner fragmenten i syftet att hantera rotationsöverlevnad.
+     * @param outState
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.clear();

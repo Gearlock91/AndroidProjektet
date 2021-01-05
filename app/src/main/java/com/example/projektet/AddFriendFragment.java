@@ -28,6 +28,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+/**
+ * Fragmentet som hanterar när man adderar nya vänner till appen.
+ * @author Andreas Roghe, Sofia Ågren
+ * @version 2020-01-05
+ */
+
 public class AddFriendFragment extends Fragment {
 
     List<MemberData> allMembers;

@@ -33,16 +33,25 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
+/**
+ * Denna klass handlar om att hantera login-begäran till appen via
+ * Firebase authentiserings databasen. Klassen kontrollerar om det givna
+ * Nickname:et har en email kopplat till sig.
+ * @author Andreas Roghe, Sofia Ågren.
+ * @version 2020-01-05
+ */
+
+
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    List<MemberData> allMembers;
-    EditText nickName;
-    EditText password;
-    Button registerButton;
-    Button loginButton;
-    Activity activity;
-    DatabaseReference myRef;
+    private List<MemberData> allMembers;
+    private EditText nickName;
+    private EditText password;
+    private Button registerButton;
+    private Button loginButton;
+    private Activity activity;
+    private DatabaseReference myRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,12 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.editTextTextPassword);
         activity = this;
         allMembers = fetchMembers();
-
-        try {
-            SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(this);
-        } catch (SQLiteException e) {
-            Toast.makeText(this, "Database unavailable", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -77,7 +80,6 @@ public class LoginActivity extends AppCompatActivity {
                 for (MemberData member : allMembers) {
                     if (member.getNickName().equals(providedNick)) {
                         email = member.getEmail();
-                        Log.d(TAG, "Email found:" + email);
                     }
                 }
                 if (email == null) {
@@ -106,13 +108,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void updateUI(FirebaseUser currentUser) {
-        if (currentUser != null) {
-            Intent intent = new Intent(this, HeadActivity.class);
-            startActivity(intent);
-        }
-    }
-
     private void signIn(String email, String password) {
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -134,6 +129,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void updateUI(FirebaseUser currentUser) {
+        if (currentUser != null) {
+            Intent intent = new Intent(this, HeadActivity.class);
+            startActivity(intent);
+        }
     }
 
     private List<MemberData> fetchMembers() {
