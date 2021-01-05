@@ -88,6 +88,7 @@ public class AddFriendFragment extends Fragment {
                     if(!successfull){
                         Toast invalidMember = Toast.makeText(layout.getContext(),"This member does not exist!", Toast.LENGTH_SHORT);
                         invalidMember.show();
+                        nickName.setText("");
                     }
                 }
 
