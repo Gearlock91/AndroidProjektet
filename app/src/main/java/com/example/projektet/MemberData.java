@@ -2,16 +2,16 @@ package com.example.projektet;
 
 class MemberData {
 
-    private String nickName;
-    private String email;
-    private String password;
+    private final String nickName;
+    private final String email;
+    private final String password;
 
-    public MemberData(String name){
-        this(name,null,null);
+    public MemberData(String name) {
+        this(name, null, null);
     }
 
     public MemberData(String name, String email) {
-        this(name,email,null);
+        this(name, email, null);
     }
 
     public MemberData(String name, String email, String password) {
@@ -28,5 +28,7 @@ class MemberData {
         return email;
     }
 
-    public String getPassword(){return password;}
+    public String getPassword() {
+        return password;
+    }
 }

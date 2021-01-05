@@ -33,8 +33,7 @@ import static android.content.ContentValues.TAG;
 
 public class RegisterFragment extends Fragment {
 
-    private FirebaseAuth mAuth;
-
+    FirebaseAuth mAuth;
     Button registerButton;
     EditText email;
     EditText nickName;
@@ -52,7 +51,7 @@ public class RegisterFragment extends Fragment {
         members.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot child : snapshot.getChildren()){
+                for (DataSnapshot child : snapshot.getChildren()) {
                     membersList.add(new MemberData(child.getKey(), child.getValue().toString()));
                 }
             }
@@ -62,21 +61,20 @@ public class RegisterFragment extends Fragment {
 
             }
         });
-
     }
 
-    public void createAccount(MemberData member){
-        if(member != null){
-            if((member.getEmail() == null || member.getEmail().isEmpty()) || (member.getPassword() == null || member.getPassword().isEmpty()) || (member.getNickName() == null || member.getNickName().isEmpty())){
+    public void createAccount(MemberData member) {
+        if (member != null) {
+            if ((member.getEmail() == null || member.getEmail().isEmpty()) || (member.getPassword() == null || member.getPassword().isEmpty()) || (member.getNickName() == null || member.getNickName().isEmpty())) {
                 Toast.makeText(activity, "All fields must be filled in.", Toast.LENGTH_SHORT).show();
                 email.setText("");
                 password.setText("");
                 nickName.setText("");
-            }else{
-                if(member.getPassword().length() < 6){
-                    Toast.makeText(activity,"Password needs to be over 6 digits.", Toast.LENGTH_SHORT).show();
+            } else {
+                if (member.getPassword().length() < 6) {
+                    Toast.makeText(activity, "Password needs to be over 6 digits.", Toast.LENGTH_SHORT).show();
                     password.setText("");
-                }else{
+                } else {
                     mAuth.createUserWithEmailAndPassword(member.getEmail(), member.getPassword())
                             .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -106,13 +104,13 @@ public class RegisterFragment extends Fragment {
                             });
                 }
             }
-        }else{
+        } else {
             Toast.makeText(activity, "Something went terribly wrong, try again", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void updateUI(FirebaseUser currentUser) {
-        if(currentUser != null){
+        if (currentUser != null) {
             getFragmentManager().popBackStack();
         }
     }
@@ -122,11 +120,8 @@ public class RegisterFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View layout = inflater.inflate(R.layout.fragment_register, container, false);
-
         activity = getActivity();
-
         mAuth = FirebaseAuth.getInstance();
-
         registerButton = (Button) layout.findViewById(R.id.registerUserButton);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
@@ -140,20 +135,18 @@ public class RegisterFragment extends Fragment {
                 String providedPassword = password.getText().toString().trim();
                 nickName = (EditText) layout.findViewById(R.id.registerNickname);
                 String providedNickName = nickName.getText().toString().trim();
-                for(MemberData checkMember : membersList){
-                    if(providedNickName.equals(checkMember.getNickName())){
+                for (MemberData checkMember : membersList) {
+                    if (providedNickName.equals(checkMember.getNickName())) {
                         Toast.makeText(activity, "Member already exists.", Toast.LENGTH_SHORT).show();
                         exists = true;
                     }
                 }
-                if(exists != true){
-                    newMember = new MemberData(providedNickName,providedEmail,providedPassword);
+                if (exists != true) {
+                    newMember = new MemberData(providedNickName, providedEmail, providedPassword);
                     createAccount(newMember);
                 }
             }
         });
-        // Inflate the layout for this fragment
         return layout;
     }
-
 }

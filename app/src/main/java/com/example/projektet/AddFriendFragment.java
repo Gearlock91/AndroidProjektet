@@ -1,8 +1,6 @@
 package com.example.projektet;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,9 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +28,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
-
-
 public class AddFriendFragment extends Fragment {
 
     List<MemberData> allMembers;
@@ -42,8 +35,6 @@ public class AddFriendFragment extends Fragment {
     EditText nickName;
     DatabaseReference myRef;
     SQLiteDatabase db;
-
-    static int id = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,45 +51,43 @@ public class AddFriendFragment extends Fragment {
             SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(layout.getContext());
             db = sqlCryptoHelper.getWritableDatabase();
 
-        }catch (SQLiteException e){
+        } catch (SQLiteException e) {
             Toast.makeText(layout.getContext(), "Database unavailable", Toast.LENGTH_LONG).show();
         }
 
-        addFriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean successful = false;
-                String wantedFriend = nickName.getText().toString().trim();
-                for(MemberData member : allMembers){
-                    if(member.getNickName().equals(wantedFriend)){
-                        KeyGen gen = new KeyGen();
-                        myRef = FirebaseDatabase.getInstance().getReference("users/"+ currentUser.getDisplayName() + "/Friends");
-                        myRef.child(member.getNickName()).child("PubKey").setValue(Base64.getEncoder().encodeToString(gen.getPuk().getEncoded()));
+        addFriend.setOnClickListener(v -> {
+            boolean successful = false;
+            String wantedFriend = nickName.getText().toString().trim();
+            for (MemberData member : allMembers) {
+                if (member.getNickName().equals(wantedFriend)) {
+                    KeyGen gen = new KeyGen();
+                    assert currentUser != null;
+                    myRef = FirebaseDatabase.getInstance().getReference("users/" + currentUser.getDisplayName() + "/Friends");
+                    myRef.child(member.getNickName()).child("PubKey").setValue(Base64.getEncoder().encodeToString(gen.getPuk().getEncoded()));
 
-                        ContentValues friendsValues = new ContentValues();
-                        friendsValues.put("FRIEND", member.getNickName());
-                        friendsValues.put("PRIVATE_KEY", Base64.getEncoder().encodeToString(gen.getPik().getEncoded()));
-                        db.insert("CRYPTOLEDGER", null, friendsValues);
+                    ContentValues friendsValues = new ContentValues();
+                    friendsValues.put("FRIEND", member.getNickName());
+                    friendsValues.put("PRIVATE_KEY", Base64.getEncoder().encodeToString(gen.getPik().getEncoded()));
+                    db.insert("CRYPTOLEDGER", null, friendsValues);
 
-                        getFragmentManager().popBackStack();
-                        Toast success = Toast.makeText(layout.getContext(), "Success!", Toast.LENGTH_SHORT);
-                        success.show();
-                        successful = true;
-                    }
+                    assert getFragmentManager() != null;
+                    getFragmentManager().popBackStack();
+                    Toast success = Toast.makeText(layout.getContext(), "Success!", Toast.LENGTH_SHORT);
+                    success.show();
+                    successful = true;
                 }
-                if(!successful){
-                    Toast invalidMember = Toast.makeText(layout.getContext(),"This member does not exist!", Toast.LENGTH_SHORT);
-                    invalidMember.show();
-                    nickName.setText("");
-                    successful = false;
-                }
-
             }
+            if (!successful) {
+                Toast invalidMember = Toast.makeText(layout.getContext(), "This member does not exist!", Toast.LENGTH_SHORT);
+                invalidMember.show();
+                nickName.setText("");
+            }
+
         });
         return layout;
     }
 
-    private List<MemberData> fetchMembers(){
+    private List<MemberData> fetchMembers() {
         List<MemberData> members = new ArrayList<MemberData>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference("users/");
@@ -106,7 +95,7 @@ public class AddFriendFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 members.clear();
-                for(DataSnapshot child : snapshot.getChildren()){
+                for (DataSnapshot child : snapshot.getChildren()) {
                     members.add(new MemberData(child.getKey()));
                 }
             }

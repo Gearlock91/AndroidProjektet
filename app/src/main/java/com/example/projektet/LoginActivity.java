@@ -43,12 +43,9 @@ public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     Activity activity;
     DatabaseReference myRef;
-    SQLiteDatabase db;
-    Cursor friendCursor;
-
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mAuth = FirebaseAuth.getInstance();
@@ -62,17 +59,13 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(this);
-
-
-        }catch (SQLiteException e){
+        } catch (SQLiteException e) {
             Toast.makeText(this, "Database unavailable", Toast.LENGTH_LONG).show();
         }
-
-
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,19 +74,19 @@ public class LoginActivity extends AppCompatActivity {
                 String providedPass = password.getText().toString().trim();
                 String email = null;
 
-                for(MemberData member : allMembers){
-                    if(member.getNickName().equals(providedNick)){
+                for (MemberData member : allMembers) {
+                    if (member.getNickName().equals(providedNick)) {
                         email = member.getEmail();
-                        Log.d(TAG,"Email found:" + email);
+                        Log.d(TAG, "Email found:" + email);
                     }
                 }
-                if(email == null){
+                if (email == null) {
                     email = "empty";
                 }
 
-                if((email == null || email.isEmpty()) || (providedPass == null || providedPass.isEmpty())){
+                if ((email == null || email.isEmpty()) || (providedPass == null || providedPass.isEmpty())) {
                     Toast.makeText(activity, "Missing information: Check nickname or password.", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     signIn(email, providedPass);
                     clearFields();
                 }
@@ -114,13 +107,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser currentUser) {
-        if(currentUser != null){
+        if (currentUser != null) {
             Intent intent = new Intent(this, HeadActivity.class);
             startActivity(intent);
         }
     }
 
-    private void signIn(String email, String password){
+    private void signIn(String email, String password) {
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -142,17 +135,18 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-    private List<MemberData> fetchMembers(){
+
+    private List<MemberData> fetchMembers() {
         List<MemberData> members = new ArrayList<MemberData>();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference("users/");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot child : snapshot.getChildren()){
+                for (DataSnapshot child : snapshot.getChildren()) {
                     child.getChildren().forEach(key -> {
                         String email = null;
-                        if(key.getKey().equals("email")){
+                        if (key.getKey().equals("email")) {
                             email = key.getValue().toString();
                         }
                         members.add(new MemberData(child.getKey(), email));
@@ -168,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
         return members;
     }
 
-    private void clearFields(){
+    private void clearFields() {
         nickName.setText("");
         password.setText("");
     }

@@ -47,7 +47,6 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
     FirebaseDatabase database;
     FirebaseUser currentUser;
     FirebaseAuth mAuth;
-
     List<MemberData> fListDatabase;
     ListView friendsList;
     ChatFragment chatFragment;
@@ -59,7 +58,7 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_head);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             chatFragment = (ChatFragment) getSupportFragmentManager().getFragment(savedInstanceState, "chatFragment");
             addFriendFragment = (AddFriendFragment) getSupportFragmentManager().getFragment(savedInstanceState, "addFriendFragment");
         }
@@ -83,26 +82,22 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         currentUser = mAuth.getCurrentUser();
 
         database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() +"/Friends");
-
+        DatabaseReference myRef = database.getReference("users/" + currentUser.getDisplayName() + "/Friends");
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 fListDatabase.clear();
-
                 friendAdapter.clear();
                 MemberData friend = null;
-                for(DataSnapshot child : snapshot.getChildren()){
+                for (DataSnapshot child : snapshot.getChildren()) {
                     friend = new MemberData(child.getKey());
                     fListDatabase.add(friend);
                 }
-                for(MemberData f : fListDatabase){
+                for (MemberData f : fListDatabase) {
                     friendAdapter.add(f);
                 }
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -110,15 +105,12 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         });
 
         friendsList.setAdapter(friendAdapter);
-
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem addFriend = menu.findItem(R.id.action_addFriend);
-        //MenuItem startChat = menu.findItem(R.id.action_sendMessage);
 
         addFriend.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -134,16 +126,15 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         });
 
         return super.onCreateOptionsMenu(menu);
-
     }
 
-    private void notificationListener(){
-        DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() +"/Messages");
+    private void notificationListener() {
+        DatabaseReference notification = database.getReference("users/" + currentUser.getDisplayName() + "/Messages");
         notification.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot child : snapshot.getChildren()){
-                    DatabaseReference notice = database.getReference("users/" + currentUser.getDisplayName() +"/Messages/" + child.getKey());
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    DatabaseReference notice = database.getReference("users/" + currentUser.getDisplayName() + "/Messages/" + child.getKey());
                     notice.addChildEventListener(new ChildEventListener() {
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -188,6 +179,7 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
         });
 
     }
+
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -207,35 +199,33 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
     @Override
     public void startChat(int position) {
         MemberData friendMember = (MemberData) friendsList.getItemAtPosition(position);
-                Bundle nameBundle = new Bundle();
-                nameBundle.putString("name", friendMember.getNickName());
-                if(chatFragment == null){
-                    chatFragment = new ChatFragment();
-                }
-                chatFragment.setArguments(nameBundle);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(R.id.container_fragment, chatFragment);
-                ft.addToBackStack(null);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
+        Bundle nameBundle = new Bundle();
+        nameBundle.putString("name", friendMember.getNickName());
+        if (chatFragment == null) {
+            chatFragment = new ChatFragment();
+        }
+        chatFragment.setArguments(nameBundle);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.container_fragment, chatFragment);
+        ft.addToBackStack(null);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.commit();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-            outState.clear();
-            super.onSaveInstanceState(outState);
-            //Save the fragment's instance
-            if(chatFragment != null){
-                if(chatFragment.isVisible()){
-                    getSupportFragmentManager().putFragment(outState, "chatFragment", chatFragment);
-                }
+        outState.clear();
+        super.onSaveInstanceState(outState);
+        //Save the fragment's instance
+        if (chatFragment != null) {
+            if (chatFragment.isVisible()) {
+                getSupportFragmentManager().putFragment(outState, "chatFragment", chatFragment);
             }
-            if( addFriendFragment != null){
-                if(addFriendFragment.isVisible()){
-                    getSupportFragmentManager().putFragment(outState, "addFriendFragment", addFriendFragment);
-                }
+        }
+        if (addFriendFragment != null) {
+            if (addFriendFragment.isVisible()) {
+                getSupportFragmentManager().putFragment(outState, "addFriendFragment", addFriendFragment);
             }
-
-
+        }
     }
 }

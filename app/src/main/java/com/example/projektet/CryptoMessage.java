@@ -5,21 +5,20 @@ import android.os.Parcelable;
 
 public class CryptoMessage implements Parcelable {
 
-    // Message.java
-        private String text; // message body
-        private String memberNickname;
-        private boolean belongsToCurrentUser; // is this message sent by us?
+    private final String text;
+    private final String memberNickname;
+    private final boolean belongsToCurrentUser;
 
-        public CryptoMessage(String text, boolean belongsToCurrentUser){
-            this(text,null,belongsToCurrentUser);
-        }
+    public CryptoMessage(String text, boolean belongsToCurrentUser) {
+        this(text, null, belongsToCurrentUser);
+    }
 
 
-        public CryptoMessage(String text, String memberNickname, boolean belongsToCurrentUser) {
-            this.text = text;
-            this.memberNickname = memberNickname;
-            this.belongsToCurrentUser = belongsToCurrentUser;
-        }
+    public CryptoMessage(String text, String memberNickname, boolean belongsToCurrentUser) {
+        this.text = text;
+        this.memberNickname = memberNickname;
+        this.belongsToCurrentUser = belongsToCurrentUser;
+    }
 
     protected CryptoMessage(Parcel in) {
         text = in.readString();
@@ -39,17 +38,17 @@ public class CryptoMessage implements Parcelable {
         }
     };
 
-         public String getText() {
-            return text;
-        }
+    public String getText() {
+        return text;
+    }
 
-        public String getMemberNickname() {
-            return memberNickname;
-        }
+    public String getMemberNickname() {
+        return memberNickname;
+    }
 
-        public boolean isBelongsToCurrentUser() {
-            return belongsToCurrentUser;
-        }
+    public boolean isBelongsToCurrentUser() {
+        return belongsToCurrentUser;
+    }
 
 
     @Override

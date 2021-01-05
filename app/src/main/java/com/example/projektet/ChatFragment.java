@@ -57,16 +57,14 @@ public class ChatFragment extends Fragment {
     FirebaseDatabase database;
     String privateKey;
     PrivateKey pKey;
-    CryptoMessage saveSentMessage;
     ChildEventListener childListener;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle test = getArguments();
         fromSender = test.getString("name");
         database = FirebaseDatabase.getInstance();
-
     }
 
     @Override
@@ -79,66 +77,58 @@ public class ChatFragment extends Fragment {
         messages = new ArrayList<CryptoMessage>();
         messageView = layout.findViewById(R.id.messages_view);
 
-        if(savedInstanceState != null) {
-//            messages = savedInstanceState.getParcelableArrayList("messages");
-//            for (CryptoMessage m : messages) {
-//                receivedMessagesAdapter.add(m);
-//            }
-//            messages = new ArrayList<CryptoMessage>();
-
+        if (savedInstanceState != null) {
             receivedMessagesAdapter.setList(savedInstanceState.getParcelableArrayList("adapter"));
         }
-
         sendButton = (ImageButton) layout.findViewById(R.id.send_button);
         message = (EditText) layout.findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 String myMessage = message.getText().toString();
+                String myMessage = message.getText().toString();
 
-                     myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser);
+                myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser);
 
-                     myRef.addValueEventListener(new ValueEventListener() {
-                         @Override
-                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                             if(snapshot.exists()){
-                                 myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser + "/PubKey");
-                                 myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                     @Override
-                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                         Encryption encryption = new Encryption();
-                                         byte[] publicBytes = Base64.getDecoder().decode(snapshot.getValue().toString());
-                                         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
-                                         try {
-                                             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-                                             PublicKey pubKey = keyFactory.generatePublic(keySpec);
-                                             encryption.encryptMessage(myMessage.getBytes(), pubKey);
-                                         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                                             e.printStackTrace();
-                                         }
-                                         myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser +"/");
-                                         Log.d(TAG, encryption.getMessageEncrypted());
-                                         myRef.push().setValue(encryption.getMessageEncrypted());
-                                     }
-                                     @Override
-                                     public void onCancelled(@NonNull DatabaseError error) {
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            myRef = database.getReference("users/" + fromSender + "/Friends/" + currentUser + "/PubKey");
+                            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    Encryption encryption = new Encryption();
+                                    byte[] publicBytes = Base64.getDecoder().decode(snapshot.getValue().toString());
+                                    X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+                                    try {
+                                        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                                        PublicKey pubKey = keyFactory.generatePublic(keySpec);
+                                        encryption.encryptMessage(myMessage.getBytes(), pubKey);
+                                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                                        e.printStackTrace();
+                                    }
+                                    myRef = database.getReference("users/" + fromSender + "/Messages/" + currentUser + "/");
+                                    Log.d(TAG, encryption.getMessageEncrypted());
+                                    myRef.push().setValue(encryption.getMessageEncrypted());
+                                }
 
-                                     }
-                                 });
-                                 CryptoMessage save = new CryptoMessage(myMessage, true);
-                                 receivedMessagesAdapter.add(save);
-                                 messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
-                                 messages.add(save);
-                             }else{
-                                 Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
-                             }
-                         }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                }
+                            });
+                            CryptoMessage save = new CryptoMessage(myMessage, true);
+                            receivedMessagesAdapter.add(save);
+                            messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
+                            messages.add(save);
+                        } else {
+                            Toast.makeText(layout.getContext(), "User needs to add you as a friend first.", Toast.LENGTH_LONG).show();
+                        }
+                    }
 
-                         @Override
-                         public void onCancelled(@NonNull DatabaseError error) {
-
-                         }
-                     });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
                 message.setText("");
             }
         });
@@ -148,27 +138,26 @@ public class ChatFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         readOnce();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle saveInstanceState){
-            //saveInstanceState.putParcelableArrayList("messages", messages);
-              saveInstanceState.putParcelableArrayList("adapter", (ArrayList) receivedMessagesAdapter.getList());
-            super.onSaveInstanceState(saveInstanceState);
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        saveInstanceState.putParcelableArrayList("adapter", (ArrayList) receivedMessagesAdapter.getList());
+        super.onSaveInstanceState(saveInstanceState);
     }
 
-    private void readOnce(){
-        myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
+    private void readOnce() {
+        myRef = database.getReference("users/" + currentUser + "/Messages/" + fromSender);
         SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(getContext());
         SQLiteDatabase db = sqlCryptoHelper.getReadableDatabase();
         Cursor friendCursor;
 
-        friendCursor = db.query("CRYPTOLEDGER", new String[]{"FRIEND","PRIVATE_KEY"}, ("FRIEND=" + "'"+fromSender+"'"),null,null,null,null);
+        friendCursor = db.query("CRYPTOLEDGER", new String[]{"FRIEND", "PRIVATE_KEY"}, ("FRIEND=" + "'" + fromSender + "'"), null, null, null, null);
 
-        if(friendCursor.moveToFirst()){
+        if (friendCursor.moveToFirst()) {
             privateKey = friendCursor.getString(1);
             friendCursor.close();
             db.close();
@@ -190,8 +179,8 @@ public class ChatFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 encryption.decryptMessage(snapshot.getValue().toString().getBytes(), pKey);
-                receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
-                messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender,false));
+                receivedMessagesAdapter.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
+                messages.add(new CryptoMessage(encryption.getMessageDecrypted(), fromSender, false));
                 messageView.smoothScrollToPosition(receivedMessagesAdapter.getCount());
             }
 
@@ -221,9 +210,9 @@ public class ChatFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        myRef = database.getReference("users/"+ currentUser +"/Messages/"+ fromSender );
+        myRef = database.getReference("users/" + currentUser + "/Messages/" + fromSender);
         myRef.removeValue();
         myRef.removeEventListener(childListener);
     }

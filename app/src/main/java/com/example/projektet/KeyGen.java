@@ -25,7 +25,6 @@ public class KeyGen {
             pik = kp.getPrivate();
 
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -33,6 +32,7 @@ public class KeyGen {
     public PublicKey getPuk() {
         return puk;
     }
+
     public PrivateKey getPik() {
         return pik;
     }

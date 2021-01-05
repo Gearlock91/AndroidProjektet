@@ -32,19 +32,14 @@ public class Encryption {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             encryptedMessage = cipher.doFinal(message);
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (InvalidKeyException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (BadPaddingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         messageEncrypted = Base64.getEncoder().encodeToString(encryptedMessage);
@@ -56,20 +51,15 @@ public class Encryption {
             cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (InvalidKeyException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         try {
             decryptedMessage = new String(cipher.doFinal(Base64.getDecoder().decode(encryptedMessage)));
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
-
 }

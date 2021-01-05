@@ -14,7 +14,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-// MessageAdapter.java
 public class MessageAdapter extends BaseAdapter implements Parcelable {
 
     List<CryptoMessage> messages = new ArrayList<CryptoMessage>();
@@ -40,21 +39,21 @@ public class MessageAdapter extends BaseAdapter implements Parcelable {
         }
     };
 
-    public List<CryptoMessage> getList(){
+    public List<CryptoMessage> getList() {
         return messages;
     }
 
-    public void setList(List<CryptoMessage> list){
+    public void setList(List<CryptoMessage> list) {
         messages = list;
     }
 
-    public void clear(){
+    public void clear() {
         this.messages.clear();
     }
 
     public void add(CryptoMessage message) {
         this.messages.add(message);
-        notifyDataSetChanged(); // to render the list we need to notify
+        notifyDataSetChanged();
     }
 
     @Override
@@ -86,14 +85,11 @@ public class MessageAdapter extends BaseAdapter implements Parcelable {
             holder.messageBody.setText(message.getText());
         } else { // this message was sent by someone else so let's create an advanced chat bubble on the left
             convertView = messageInflater.inflate(R.layout.recieved_message, null);
-           // holder.avatar = (View) convertView.findViewById(R.id.avatar);
             holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.messageBody = (TextView) convertView.findViewById(R.id.message_body);
             convertView.setTag(holder);
-
             holder.name.setText(message.getMemberNickname());
             holder.messageBody.setText(message.getText());
-           // drawable.setColor(Color.parseColor(message.getMemberData().getColor()));
         }
 
         return convertView;
@@ -111,7 +107,6 @@ public class MessageAdapter extends BaseAdapter implements Parcelable {
 }
 
 class MessageViewHolder {
-    public View avatar;
     public TextView name;
     public TextView messageBody;
 }

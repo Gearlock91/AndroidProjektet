@@ -31,33 +31,32 @@ public class FriendsListAdapter extends BaseAdapter {
     Context context;
     Listener listener;
 
-
-    public interface Listener{
+    public interface Listener {
         void startChat(int position);
     }
-
 
     public FriendsListAdapter(Context context) {
         this.context = context;
 
-        if(context instanceof FriendsListAdapter.Listener){
+        if (context instanceof FriendsListAdapter.Listener) {
             this.listener = (Listener) context;
-        }
-        else{
+        } else {
             throw new RuntimeException(context.toString() + "must implement listener interface.");
         }
     }
 
-    public void add(MemberData friend){
+    public void add(MemberData friend) {
         friendsList.add(friend);
         notifyDataSetChanged();
     }
 
-    public void remove(int position){
+    public void remove(int position) {
         friendsList.remove(position);
     }
 
-    public void clear(){friendsList.clear();}
+    public void clear() {
+        friendsList.clear();
+    }
 
     @Override
     public int getCount() {
@@ -86,7 +85,7 @@ public class FriendsListAdapter extends BaseAdapter {
         holder.nickName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               listener.startChat(position);
+                listener.startChat(position);
             }
         });
 
@@ -101,7 +100,7 @@ public class FriendsListAdapter extends BaseAdapter {
 
                 SQLiteOpenHelper sqlCryptoHelper = new SqlCryptoHelper(FriendsListAdapter.this.context);
                 SQLiteDatabase db = sqlCryptoHelper.getWritableDatabase();
-                db.delete("CRYPTOLEDGER", "FRIEND=" + "'" + friend.getNickName() + "'",null);
+                db.delete("CRYPTOLEDGER", "FRIEND=" + "'" + friend.getNickName() + "'", null);
                 friendsList.remove(position);
                 notifyDataSetChanged();
             }
@@ -112,7 +111,7 @@ public class FriendsListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public class FriendHolder{
+    public class FriendHolder {
         public TextView nickName;
         public ImageButton removeButton;
     }
