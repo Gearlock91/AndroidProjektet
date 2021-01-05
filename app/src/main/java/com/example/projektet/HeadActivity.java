@@ -222,7 +222,7 @@ public class HeadActivity extends AppCompatActivity implements FriendsListAdapte
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
+            outState.clear();
             super.onSaveInstanceState(outState);
             //Save the fragment's instance
             if(chatFragment != null){

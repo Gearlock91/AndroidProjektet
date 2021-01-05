@@ -58,8 +58,6 @@ public class ChatFragment extends Fragment {
     PrivateKey pKey;
     CryptoMessage saveSentMessage;
 
-    int id = 0;
-
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -73,6 +71,20 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_chat, container, false);
+        myAuth = FirebaseAuth.getInstance();
+        currentUser = myAuth.getCurrentUser().getDisplayName();
+        receivedMessagesAdapter = new MessageAdapter(layout.getContext());
+        messages = new ArrayList<CryptoMessage>();
+        messageView = layout.findViewById(R.id.messages_view);
+
+        if(savedInstanceState != null) {
+            messages = savedInstanceState.getParcelableArrayList("messages");
+            for (CryptoMessage m : messages) {
+                receivedMessagesAdapter.add(m);
+            }
+            messages.clear();
+        }
+
         sendButton = (ImageButton) layout.findViewById(R.id.send_button);
         message = (EditText) layout.findViewById(R.id.message_text);
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -127,28 +139,20 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        myAuth = FirebaseAuth.getInstance();
-        currentUser = myAuth.getCurrentUser().getDisplayName();
-        receivedMessagesAdapter = new MessageAdapter(layout.getContext());
-        messages = new ArrayList<CryptoMessage>();
-        messageView = layout.findViewById(R.id.messages_view);
-        readOnce();
-        if(savedInstanceState != null){
-            messages = savedInstanceState.getParcelableArrayList("messages");
-            for(CryptoMessage m : messages) {
-                receivedMessagesAdapter.add(m);
-            }
-        }
         messageView.setAdapter(receivedMessagesAdapter);
         return layout;
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        readOnce();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle saveInstanceState){
-            saveInstanceState.clear();
             saveInstanceState.putParcelableArrayList("messages", messages);
             super.onSaveInstanceState(saveInstanceState);
-
     }
 
     private void readOnce(){
@@ -193,7 +197,6 @@ public class ChatFragment extends Fragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
             }
 
             @Override
